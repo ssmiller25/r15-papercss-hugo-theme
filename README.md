@@ -2,7 +2,7 @@
 
 A Hugo theme made with PaperCSS, the less formal CSS framework.
 
-Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://github.com/zwbetz-gh/papercss-hugo-theme)
+Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://github.com/zwbetz-gh/papercss-hugo-theme).  Mostly for persoanl use with my blog and other sub-sites, but completely usable to anyone else you might find it useful.
 
 ## Table of contents
 

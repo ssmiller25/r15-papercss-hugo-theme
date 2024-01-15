@@ -1,12 +1,12 @@
 name = "PaperCSS"
 license = "MIT"
-licenselink = "https://github.com/zwbetz-gh/papercss-hugo-theme/blob/master/LICENSE"
+licenselink = "https://github.com/ssmiller25/r15-papercss-hugo-theme/blob/main/LICENSE"
 description = "A Hugo theme made with PaperCSS, the less formal CSS framework."
-homepage = "https://github.com/zwbetz-gh/papercss-hugo-theme"
+homepage = "https://github.com/ssmiller25/r15-papercss-hugo-theme"
 tags = ["blog", "paper", "informal"]
 features = ["blog", "toc", "shortcodes"]
 min_version = "0.81.0"
 
 [author]
-  name = "Zachary Betz"
-  homepage = "https://zwbetz.com/"
+  name = "Steve Miller"
+  homepage = "https://r15cookie.com/"
