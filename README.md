@@ -32,7 +32,7 @@ Hugo version `0.81.0` or higher is required. View the [Hugo releases](https://gi
 From the root of your site:
 
 ```
-git submodule add https://github.com/zwbetz-gh/papercss-hugo-theme.git themes/papercss-hugo-theme
+git submodule add https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
 ```
 
 ## Updating
