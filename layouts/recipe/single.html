@@ -1,0 +1,11 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+
+{{ .Content }}
+
+<hr>
+
+Date Added: {{ .Date }}
+Servings: {{ .Param "servings" }}
+
+{{ end }}
