@@ -21,7 +21,7 @@ Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://gi
 
 ## Demo
 
-https://papercss-hugo-theme.netlify.com/
+https://r15-papercss-hugo.r15cookie.com
 
 ## Minimum Hugo version
 
