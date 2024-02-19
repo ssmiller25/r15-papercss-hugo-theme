@@ -1,4 +1,4 @@
-baseURL: https://example.com
+baseURL: https://r15-papercss-hugo.r15cookie.com
 languageCode: en-us
 defaultContentLanguage: en
 title: PaperCSS
@@ -39,12 +39,15 @@ menu:
     - name: Recipe
       url: /recipe/
       weight: 3
+    - name: Coffee
+      url: /coffee/
+      weight: 4
     - name: About
       url: /about/
-      weight: 4
+      weight: 5
     - name: RSS
       url: /index.xml
-      weight: 5
+      weight: 6
 
 markup:
   defaultMarkdownHandler: goldmark
