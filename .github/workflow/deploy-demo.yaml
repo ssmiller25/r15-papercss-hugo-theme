@@ -1,0 +1,31 @@
+name: Deploy Hugo Site with Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main # GitHub repository branch
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:         
+      - name: Checkout repository and update Hugo themes
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Build Hugo site
+        run: |
+          make build-example
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: r15-papercss-hugo-theme # Specify your project name
+          branch: main # Specify the production branch for Cloudflare Pages
+          directory: exampleSite/public

@@ -1,0 +1,13 @@
+#! /bin/sed 2,5!d;s/^#.//
+# This script must be sourced from within a shell
+# and not executed. For instance with:
+# 
+#   . env.sh
+
+# Global API key
+export CLOUDFLARE_EMAIL=youremail@domain.tld
+export CLOUDFLARE_API_KEY=yourglobalapikey
+
+# Token...shoudl NOT have email set from above
+# Attempt to use token...not enough perm yet???
+#export CLOUDFLARE_API_TOKEN=yourtoken
