@@ -53,7 +53,7 @@ hugo server --themesDir ../..
 
 ## Configuration
 
-Copy `config.yaml` from the [`exampleSite`](https://github.com/zwbetz-gh/papercss-hugo-theme/tree/master/exampleSite), then edit as desired. 
+Copy `config.yaml` from the [`exampleSite`](https://github.com/ssmiller25/r15-papercss-hugo-theme/blob/main/exampleSite/config.yaml), then edit as desired. 
 
 ## Favicons
 
