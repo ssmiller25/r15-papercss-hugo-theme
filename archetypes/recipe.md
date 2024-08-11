@@ -14,7 +14,7 @@ calories: #in kcal, can be BLANK
 ## Ingredients
 
 - First
-- Secent [^1]
+- Second [^1]
 
 ## Instructions
 
