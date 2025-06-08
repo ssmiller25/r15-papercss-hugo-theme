@@ -1,4 +1,4 @@
-name: Prebuild AI workspace
+name: Prebuild Workspace
 
 on:
   push:

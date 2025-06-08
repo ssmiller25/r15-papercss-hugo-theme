@@ -1,4 +1,4 @@
-name: Deploy Hugo Site with Cloudflare Pages
+name: Deploy Example Site
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
         with:
           cacheFrom: ghcr.io/ssmiller25/r15-papercss-hugo-theme
           push: never
-        run: |
+        runCmd: |
           make build-example
 
       - name: Publish to Cloudflare Pages
