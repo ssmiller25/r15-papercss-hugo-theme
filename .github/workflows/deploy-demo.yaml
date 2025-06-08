@@ -29,8 +29,8 @@ jobs:
         with:
           cacheFrom: ghcr.io/ssmiller25/r15-papercss-hugo-theme
           push: never
-        runCmd: |
-          make build-example
+          runCmd: |
+            make build-example
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@1
