@@ -2,22 +2,26 @@
 
 A Hugo theme made with PaperCSS, the less formal CSS framework.
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ssmiller25/r15-papercss-hugo-theme)
+
 Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://github.com/zwbetz-gh/papercss-hugo-theme).  Mostly for persoanl use with my blog and other sub-sites, but completely usable to anyone else you might find it useful.
 
 ## Table of contents
 
-- [Demo](#demo)
-- [Minimum Hugo version](#minimum-hugo-version)
-- [Installation](#installation)
-- [Updating](#updating)
-- [Run example site](#run-example-site)
-- [Configuration](#configuration)
-- [Favicons](#favicons)
-- [Shortcodes](#shortcodes)
-- [Disable toc for a blog post](#disable-toc-for-a-blog-post)~
-- [Disable summary for a blog post](#disable-summary-for-a-blog-post)
-- [Getting help](#getting-help)
-- [Credits](#credits)
+- [PaperCSS](#papercss)
+  - [Table of contents](#table-of-contents)
+  - [Demo](#demo)
+  - [Minimum Hugo version](#minimum-hugo-version)
+  - [Installation](#installation)
+  - [Updating](#updating)
+  - [Run example site](#run-example-site)
+  - [Configuration](#configuration)
+  - [Favicons](#favicons)
+  - [Shortcodes](#shortcodes)
+  - [Disable toc for a blog post](#disable-toc-for-a-blog-post)
+  - [Disable summary for a blog post](#disable-summary-for-a-blog-post)
+  - [Getting help](#getting-help)
+  - [Credits](#credits)
 
 ## Demo
 
