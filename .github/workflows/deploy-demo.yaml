@@ -12,12 +12,23 @@ jobs:
 
     steps:         
       - name: Checkout repository and update Hugo themes
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
 
+      - name: Login to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build Hugo site
+        uses: devcontainers/ci@v0.3
+        with:
+          cacheFrom: ghcr.io/ssmiller25/r15-papercss-hugo-theme
+          push: never
         run: |
           make build-example
 
