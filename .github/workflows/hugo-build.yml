@@ -1,0 +1,31 @@
+name: Hugo Build & Test
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install latest Hugo
+        run: |
+          HUGO_LATEST=$(curl -s https://api.github.com/repos/gohugoio/hugo/releases/latest | grep 'browser_download_url.*Linux-64bit.tar.gz' | cut -d '"' -f 4)
+          curl -L "$HUGO_LATEST" -o hugo.tar.gz
+          tar -xzf hugo.tar.gz
+          sudo mv hugo /usr/local/bin/hugo
+          rm hugo.tar.gz
+      - name: Build site
+        run: hugo --minify --source exampleSite
+      - name: Lint HTML
+        run: |
+          npm install -g htmlhint
+          htmlhint layouts/**/*.html
+      - name: Lint CSS
+        run: |
+          npm install -g stylelint
+          stylelint "assets/css/**/*.css" "static/css/**/*.css"
+      - name: Audit npm dependencies
+        run: |
+          if [ -f assets/css/package.json ]; then cd assets/css && npm audit; fi
