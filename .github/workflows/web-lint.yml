@@ -1,0 +1,25 @@
+name: Web Template Lint
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint HTML in devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          cacheFrom: ghcr.io/ssmiller25/r15-papercss-hugo-theme
+          push: never
+          runCmd: |
+            htmlhint layouts/**/*.html
+      - name: Lint CSS in devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          cacheFrom: ghcr.io/ssmiller25/r15-papercss-hugo-theme
+          push: never
+          runCmd: |
+            stylelint "assets/css/**/*.css" "static/css/**/*.css"
