@@ -90,8 +90,17 @@ def get_note_overrides(notes_ref: str = NOTES_REF) -> dict[str, tuple[str, str]]
     commit's displayed subject/body be corrected without rewriting the
     commit itself. If a commit has no note, its real subject/body is used.
     """
-    # Exits 0 with empty output if the ref doesn't exist locally yet, so no
-    # special-casing is needed for a repo/clone with no notes.
+    # Check the ref exists first rather than relying on `git notes list`'s
+    # exit behavior for a missing ref, which isn't consistent across git
+    # versions/platforms — this way a fresh clone/CI checkout with no notes
+    # yet never risks a hard failure here.
+    ref_exists = subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet", notes_ref],
+        capture_output=True
+    ).returncode == 0
+    if not ref_exists:
+        return {}
+
     list_output = run_git_command(["notes", f"--ref={notes_ref}", "list"])
 
     overrides = {}
