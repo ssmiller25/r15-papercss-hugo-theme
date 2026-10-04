@@ -1,0 +1,17 @@
+{
+  "total": 454,
+  "pages": 24,
+  "aliasesExcluded": 9,
+  "byRule": {
+    "aria-label-misuse": 6,
+    "element-permitted-content": 96,
+    "form-dup-name": 1,
+    "no-implicit-button-type": 24,
+    "no-inline-style": 81,
+    "no-trailing-whitespace": 218,
+    "text-content": 24,
+    "valid-id": 2,
+    "wcag/h30": 1,
+    "wcag/h37": 1
+  }
+}

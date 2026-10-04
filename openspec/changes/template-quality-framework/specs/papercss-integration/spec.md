@@ -56,15 +56,41 @@ Styles applied through the override layer SHALL be delivered in a form that chan
 - **WHEN** the override layer is served
 - **THEN** its content is minified for transfer size
 
-### Requirement: Framework defects are fixed locally by default
+### Requirement: Framework defects are adopted when the framework provides a fix
 
-Where the vendored framework contains a defect that affects this theme's output, the theme SHALL correct it in its override layer rather than depend on an upstream correction landing.
+Where a framework defect affects this theme's output and a fixed version of the framework is available, the theme SHALL adopt that version rather than carry a local correction for a defect the framework has fixed. The theme SHALL correct a defect locally only where the vendored framework version still contains it, and SHALL record why that version does not carry the fix.
 
 #### Scenario: A framework defect affects the theme
 
-- **WHEN** the framework's shipped stylesheet causes incorrect output and an upstream correction is not available in the version the theme vendors
+- **WHEN** the framework's shipped stylesheet causes incorrect output
+- **THEN** the theme checks whether a fixed framework version is available before correcting it locally
+
+#### Scenario: A fixed framework version exists
+
+- **WHEN** a published framework version fixes a defect the theme has been working around
+- **THEN** the theme adopts that version
+- **AND** the local correction for that defect is removed
+
+#### Scenario: The vendored version still contains the defect
+
+- **WHEN** no fixed framework version is available for the defect
 - **THEN** the theme corrects the behavior in its override layer
 - **AND** the correction is documented with its cause
+
+### Requirement: The vendored framework version is pinned to a release
+
+The theme SHALL vendor a framework version that has been published as a release artifact, and SHALL NOT vendor an unreleased or locally built framework stylesheet, so that the vendored file's provenance stays verifiable.
+
+#### Scenario: A framework fix is available but unreleased
+
+- **WHEN** a fix exists only in an unreleased or locally built framework stylesheet
+- **THEN** the theme does not adopt it
+- **AND** the theme waits for the published release
+
+#### Scenario: The vendored stylesheet is audited
+
+- **WHEN** a maintainer compares the vendored stylesheet against the published artifact for the recorded version
+- **THEN** they are byte-identical
 
 ### Requirement: Toggle controls remain keyboard reachable
 
@@ -121,12 +147,34 @@ Where the theme corrects a framework defect by changing markup rather than style
 - **THEN** the framework's documented hooks remain present on the altered elements
 - **AND** the component renders with the framework's intended appearance
 
-### Requirement: Upstream adoption is tracked separately
+### Requirement: Local modifications live only in the override layer
 
-A theme-local correction SHALL NOT be represented as a fork of the framework.
+A theme-local correction SHALL NOT be applied by editing the vendored stylesheet. The vendored file SHALL remain byte-identical to a published framework artifact.
 
 #### Scenario: The vendored stylesheet is inspected
 
 - **WHEN** a maintainer inspects how the framework is obtained
 - **THEN** the vendored stylesheet is unmodified from its published version
 - **AND** all local modifications live in the override layer
+
+#### Scenario: A correction is needed
+
+- **WHEN** a correction to framework behavior is required
+- **THEN** it is applied in the override layer or in theme markup
+- **AND** the vendored file is not edited to carry it
+
+### Requirement: The theme tracks the framework it depends on
+
+Where the framework's published releases change behavior the theme relies on, the theme SHALL identify the affected behavior and record a deliberate response, so that an upgrade never changes the theme's output silently.
+
+#### Scenario: A framework release changes observable behavior
+
+- **WHEN** an adopted framework release changes something the theme's output depended on
+- **THEN** the theme identifies the affected behavior
+- **AND** the response is recorded rather than being left to chance
+
+#### Scenario: The framework stops supplying a dependency
+
+- **WHEN** an adopted framework release no longer supplies something the theme's output relied on implicitly
+- **THEN** the theme supplies it explicitly or records the fallback as its intended appearance
+- **AND** the change is not left as an unrecorded visual difference

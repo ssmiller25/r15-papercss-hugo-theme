@@ -6,15 +6,15 @@
   {{ hugo.Generator }}
   <link rel="canonical" href="{{ .Permalink }}">
 
-  {{ if .IsHome }}
-    {{ with .Site.Params.homeMetaContent }}
+{{ if .IsHome }}
+{{ with .Site.Params.homeMetaContent }}
       <meta name="description" content="{{ . | plainify }}">
-    {{ end }}
-  {{ else }}
-    {{ $summary := trim (.Summary | plainify | htmlUnescape) "\n\r"
-      | default .Title }}
+{{ end }}
+{{ else }}
+{{ $summary := trim (.Summary | plainify | htmlUnescape) "\n\r"
+| default .Title }}
     <meta name="description" content="{{ $summary }}">
-  {{ end }}
+{{ end }}
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -26,17 +26,17 @@
 
   <link rel="stylesheet" type="text/css" href="{{ "css/paper.css" | relURL }}">
 
-  {{ $customCssPath := "css/custom.css" }}
-  {{ $customCss:= resources.Get $customCssPath | resources.ExecuteAsTemplate $customCssPath . }}
+{{ $customCssPath := "css/custom.css" }}
+{{ $customCss:= resources.Get $customCssPath | resources.ExecuteAsTemplate $customCssPath . }}
   <link rel="stylesheet" type="text/css" href="{{ $customCss.RelPermalink }}">
-  
-  {{ if hugo.IsProduction }}
-    {{ template "_internal/google_analytics.html" . }}
-  {{ end }}
 
-  {{ $title := print .Title " | " .Site.Title }}
-  {{ if .IsHome }}
-    {{ $title = .Site.Title }}
-  {{ end }}
+{{ if hugo.IsProduction }}
+    {{ template "_internal/google_analytics.html" . }}
+{{ end }}
+
+{{ $title := print .Title " | " .Site.Title }}
+{{ if .IsHome }}
+{{ $title = .Site.Title }}
+{{ end }}
   <title>{{ $title }}</title>
 </head>

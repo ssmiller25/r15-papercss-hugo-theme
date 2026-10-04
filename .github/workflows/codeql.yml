@@ -17,7 +17,11 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: html, javascript
+          # CodeQL has no HTML analyzer, and `html` here made init fail with
+          # "Did not recognize the following languages: html", so every run of
+          # this job errored before analyzing anything. Markup correctness is
+          # covered by html-validate in the Web Template Lint workflow instead.
+          languages: javascript-typescript
       - name: Autobuild
         uses: github/codeql-action/autobuild@v3
       - name: Perform CodeQL Analysis

@@ -4,57 +4,57 @@
 {{ .Content }}
 
 {{ if site.Data.commits }}
-  {{ $commits := site.Data.commits }}
+{{ $commits := site.Data.commits }}
 
   <div id="commits-container">
     <div id="commits-list"></div>
-    
+
     <nav id="pagination-nav" style="margin-top: 2rem; text-align: center; display: none;">
       <button id="prev-page" style="margin: 0 0.5rem; padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 3px;">
         ← Newer
       </button>
-      
+
       <span id="page-info" style="margin: 0 1rem;"></span>
-      
+
       <button id="next-page" style="margin: 0 0.5rem; padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 3px;">
         Older →
       </button>
     </nav>
   </div>
-  
+
   <script>
     // Embed commits data
     const commitsData = {{ $commits | jsonify | safeJS }};
     const commitsPerPage = 10;
     let currentPage = 1;
-    
+
     // Get GitHub repo from Hugo config (set in site's config.yaml)
     const githubRepo = {{ site.Params.github_repo | default "" | jsonify | safeJS }};
-    
+
     function renderCommits() {
       const container = document.getElementById('commits-list');
       const startIndex = (currentPage - 1) * commitsPerPage;
       const endIndex = Math.min(startIndex + commitsPerPage, commitsData.length);
       const pageCommits = commitsData.slice(startIndex, endIndex);
-      
+
       let html = '';
-      
+
       pageCommits.forEach(commit => {
         // Build GitHub commit URL dynamically from config
-        const commitUrl = githubRepo ? 
-          `https://github.com/${githubRepo}/commit/${commit.full_hash}` : 
+        const commitUrl = githubRepo ?
+          `https://github.com/${githubRepo}/commit/${commit.full_hash}` :
           '#';
-        
+
         html += `
           <article class="commit-entry" style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #eee;">
             <h2 style="margin-bottom: 0.5rem;">
-              <a href="${commitUrl}" 
+              <a href="${commitUrl}"
                  style="text-decoration: none; color: inherit;"
                  target="_blank" rel="noopener">
                 ${commit.subject}
               </a>
             </h2>
-            
+
             <div class="commit-meta" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
               <span class="commit-hash" style="font-family: monospace; background: #f4f4f4; padding: 2px 6px; border-radius: 3px;">
                 ${commit.short_hash}
@@ -66,9 +66,9 @@
                 by ${commit.author_name}
               </span>
             </div>
-            
+
             ${commit.body ? `<div class="commit-body" style="margin: 1rem 0;">${commit.body.replace(/\\n/g, '<br>')}</div>` : ''}
-            
+
             ${commit.changed_files_mapped && commit.changed_files_mapped.length > 0 ? `
               <div class="commit-files" style="margin-top: 1rem;">
                 <strong>Changed files:</strong>
@@ -92,22 +92,22 @@
           </article>
         `;
       });
-      
+
       container.innerHTML = html;
-      
+
       // Update pagination
       const totalPages = Math.ceil(commitsData.length / commitsPerPage);
       document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
-      
+
       document.getElementById('prev-page').disabled = currentPage === 1;
       document.getElementById('prev-page').style.opacity = currentPage === 1 ? '0.5' : '1';
-      
+
       document.getElementById('next-page').disabled = currentPage === totalPages;
       document.getElementById('next-page').style.opacity = currentPage === totalPages ? '0.5' : '1';
-      
+
       document.getElementById('pagination-nav').style.display = totalPages > 1 ? 'block' : 'none';
     }
-    
+
     // Event listeners
     document.getElementById('prev-page').addEventListener('click', () => {
       if (currentPage > 1) {
@@ -116,7 +116,7 @@
         window.scrollTo(0, 0);
       }
     });
-    
+
     document.getElementById('next-page').addEventListener('click', () => {
       const totalPages = Math.ceil(commitsData.length / commitsPerPage);
       if (currentPage < totalPages) {
@@ -125,25 +125,25 @@
         window.scrollTo(0, 0);
       }
     });
-    
+
     // Initial render
     renderCommits();
   </script>
-  
+
 {{ else }}
-  {{/* Fallback: Show regular content (blog posts or _index.md content) */}}
-  {{ $paginator := .Paginate (where site.RegularPages "Type" "in" site.Params.mainSections) }}
-  
-  {{ range $paginator.Pages.ByPublishDate.Reverse }}
+{{/* Fallback: Show regular content (blog posts or _index.md content) */}}
+{{ $paginator := .Paginate (where site.RegularPages "Type" "in" site.Params.mainSections) }}
+
+{{ range $paginator.Pages.ByPublishDate.Reverse }}
     <h2 class="post-list {{ if ne .Params.show_summary false }}summary{{ end }}">
       <a href="{{ .RelPermalink }}">
         {{ .Title }}
       </a>
     </h2>
-    {{ if ne .Params.show_summary false }}
+{{ if ne .Params.show_summary false }}
       {{ .Summary }}
-    {{ end }}
-  {{ end }}
+{{ end }}
+{{ end }}
   {{ template "partials/pagination.html" . }}
 {{ end }}
 

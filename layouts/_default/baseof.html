@@ -6,12 +6,12 @@
       {{ partial "nav.html" . }}
       {{ partial "searchbox.html" . }}
       <main>
-        {{ block "main" . }}{{ end }}
+{{ block "main" . }}{{ end }}
       </main>
-  </div>
-  {{ if site.Params.enable_search }}
+    </div>
+{{ if site.Params.enable_search }}
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
   <script src="/js/search.js"></script>
-  {{ end }}
+{{ end }}
   </body>
 </html>

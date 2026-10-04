@@ -6,10 +6,19 @@ body {
 /* anchors */
 a,
 a:visited {
-  color: rgb(0, 0, 238);
+  color: rgb(0 0 238);
   background-image: none;
   text-decoration: underline;
 }
+
+/*
+ * The nav override has to out-specify both `a` and `a:visited`, so its
+ * specificity range (0,0,2)-(0,1,2) straddles the anchor rule's (0,0,1)-(0,1,1).
+ * No source order satisfies `no-descending-specificity` for an interleaved pair
+ * like this, and the order is irrelevant anyway: every nav selector wins on
+ * specificity alone.
+ */
+/* stylelint-disable no-descending-specificity -- see above */
 
 /* navbar */
 nav a,
@@ -17,6 +26,8 @@ nav a:visited {
   color: #41403e;
   text-decoration: none;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 /* blockquote */
 blockquote {
@@ -27,6 +38,7 @@ blockquote {
 .post-list {
   font-size: 2em; 
 }
+
 .summary {
   margin-bottom: 0.1em; 
 }
@@ -41,6 +53,7 @@ blockquote {
   padding: 1em;
   margin-top: 1em;
 }
+
 .toc h2 {
   font-size: 1.3em;
 }

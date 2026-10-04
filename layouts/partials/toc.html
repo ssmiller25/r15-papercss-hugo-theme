@@ -1,20 +1,20 @@
 {{ $headings := findRE "<h2.*?>(.|\n])+?</h2>" .Content }}
-{{ if ge (len $headings) 2 }}
+{{- if ge (len $headings) 2 -}}
 <div class="child-borders">
   <div class="toc border" aria-labelledby="toc-heading">
     <h2 id="toc-heading">Table of contents</h2>
     <ol>
-      {{ range $headings }}
+{{ range $headings }}
         <li>
-          {{ $id := findRE "id=\".*\"" . }}
-          {{ $id = index $id 0 }}
-          {{ $id = strings.TrimPrefix "id=\"" $id }}
-          {{ $id = strings.TrimSuffix "\"" $id }}
+{{ $id := findRE "id=\".*\"" . }}
+{{ $id = index $id 0 }}
+{{ $id = strings.TrimPrefix "id=\"" $id }}
+{{ $id = strings.TrimSuffix "\"" $id }}
           <a href="#{{ $id }}">
             {{ . | htmlUnescape | plainify }}
           </a>
         </li>
-      {{ end }}
+{{ end }}
     </ol>
   </div>
 </div>

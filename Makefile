@@ -9,7 +9,26 @@ run-example:  ## Run the example site.
 
 .PHONY: build-example
 build-example:   ## Build the example site
-	@(cd exampleSite; hugo --themesDir ../..; cd ..)
+	@# --cleanDestinationDir matters for correctness, not tidiness: Hugo leaves
+	@# output from a previous build in place when a template stops producing a
+	@# page, and the verification gate would otherwise validate that stale file
+	@# as though it were current output.
+	@(cd exampleSite; hugo --cleanDestinationDir --themesDir ../..; cd ..)
+
+.PHONY: check
+check:   ## Run the full verification gate - build the example site, validate the generated HTML against the committed error baseline, then lint the theme's stylesheet (same sequence as CI)
+	@$(MAKE) build-example
+	@node scripts/check-html.mjs
+	@# stylelint resolves a shareable `extends` against the config file, the
+	@# working directory, and finally a directory it infers from the node
+	@# binary. The linters are installed globally and that inference does not
+	@# reliably point at where npm put them, so name it explicitly.
+	@stylelint --config-basedir "$$(npm root --global)" "assets/css/**/*.css"
+
+.PHONY: check-update-baseline
+check-update-baseline:   ## Re-measure the HTML error baseline. Only run this when the counts have genuinely dropped; it hides regressions you did not fix
+	@$(MAKE) build-example
+	@node scripts/check-html.mjs --update
 
 .PHONY: note
 note:   ## Add/edit a display-override note: make note HASH=<hash> (local only - git push does NOT push notes, run notes-push after)

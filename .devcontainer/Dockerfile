@@ -33,5 +33,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | sudo -E bash
     sudo apt-get clean && \
     sudo rm -rf /var/lib/apt/lists/*
 
-# Install html and css linters
-RUN sudo npm install -g htmlhint stylelint stylelint-config-standard
+# Install html and css linters. Versions are pinned exactly: these gates decide
+# whether CI passes, so an unpinned range would let the build change under us.
+ARG HTML_VALIDATE_VERSION=11.16.2
+ARG STYLELINT_VERSION=17.16.0
+ARG STYLELINT_CONFIG_STANDARD_VERSION=40.0.0
+
+RUN sudo npm install -g \
+    html-validate@${HTML_VALIDATE_VERSION} \
+    stylelint@${STYLELINT_VERSION} \
+    stylelint-config-standard@${STYLELINT_CONFIG_STANDARD_VERSION}

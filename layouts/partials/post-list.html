@@ -6,7 +6,7 @@
       {{ .Title }}
     </a>
   </h2>
-  {{ if ne .Params.show_summary false }}
+{{ if ne .Params.show_summary false }}
     {{ .Summary }}
-  {{ end }}
+{{ end }}
 {{ end }}

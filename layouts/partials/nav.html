@@ -13,9 +13,9 @@
     </button>
     <div class="collapsible-body">
       <ul class="inline">
-      {{ range .Site.Menus.nav }}
+{{ range .Site.Menus.nav }}
         <li><a href="{{ .URL }}">{{ .Name }}</a></li>
-      {{ end }}
+{{ end }}
       </ul>
     </div>
   </div>

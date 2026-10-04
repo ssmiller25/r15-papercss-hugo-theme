@@ -6,13 +6,13 @@
 {{ $new := "" }}
 
 {{ if eq $command "Fit" }}
-  {{ $new = $original.Fit $options }}
+{{ $new = $original.Fit $options }}
 {{ else if eq $command "Fill" }}
-  {{ $new = $original.Fill $options }}
+{{ $new = $original.Fill $options }}
 {{ else if eq $command "Resize" }}
-  {{ $new = $original.Resize $options }}
+{{ $new = $original.Resize $options }}
 {{ else if eq $command "Original" }}
-  {{ $new = $original }}
+{{ $new = $original }}
 {{ else }}
   {{ errorf "Invalid image processing command: Must be one of Fit, Fill, Resize, Original." }}
 {{ end }}
@@ -22,14 +22,14 @@
     <img src="{{ $new.RelPermalink }}">
   </a>
   <div class="card-body">
-  {{ with (.Get "title" )}}
+{{ with (.Get "title" )}}
     <h4 class="card-title">{{ . | markdownify }}</h4>
-  {{ end }}
-  {{ with (.Get "subtitle" )}}
+{{ end }}
+{{ with (.Get "subtitle" )}}
     <h5 class="card-subtitle">{{ . | markdownify }}</h5>
-  {{ end }}
-  {{ with (.Get "text") }}
+{{ end }}
+{{ with (.Get "text") }}
     <p class="card-text">{{ . | markdownify }}</p>
-  {{ end }}
+{{ end }}
   </div>
 </div>

@@ -4,22 +4,29 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Lint HTML in devcontainer
+      # `make check` is the single source of truth for the gate sequence, so CI
+      # and local runs cannot drift apart.
+      #
+      # The gates are, in order:
+      #   make build-example   - generate the HTML being verified
+      #   check-html.mjs       - validate it against the committed error baseline
+      #   stylelint            - lint the theme's own stylesheet
+      #
+      # check-html.mjs validates generated pages, not the Go templates: Hugo
+      # templates are not HTML, and htmlhint against them reported only
+      # false positives. static/css/paper.css is likewise skipped, being
+      # vendored from upstream and kept byte-identical to the published release.
+      - name: Verify build, generated HTML, and CSS in devcontainer
         uses: devcontainers/ci@v0.3
         with:
           cacheFrom: ghcr.io/ssmiller25/r15-papercss-hugo-theme
           push: never
           runCmd: |
-            htmlhint layouts/**/*.html
-      - name: Lint CSS in devcontainer
-        uses: devcontainers/ci@v0.3
-        with:
-          cacheFrom: ghcr.io/ssmiller25/r15-papercss-hugo-theme
-          push: never
-          runCmd: |
-            stylelint "assets/css/**/*.css" "static/css/**/*.css"
+            make check
