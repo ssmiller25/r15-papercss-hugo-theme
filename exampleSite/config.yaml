@@ -54,6 +54,7 @@ menu:
 outputs:
   home:
     - HTML
+    - RSS
     - SearchIndex
 
 outputFormats:
@@ -62,6 +63,8 @@ outputFormats:
     baseName: search
     isPlainText: true
     notAlternative: true
+
+markup:
   goldmark:
     extensions:
       definitionList: true

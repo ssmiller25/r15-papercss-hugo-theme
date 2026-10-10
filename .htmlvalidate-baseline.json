@@ -1,0 +1,9 @@
+{
+  "total": 238,
+  "pages": 26,
+  "aliasesExcluded": 21,
+  "byRule": {
+    "no-inline-style": 8,
+    "no-trailing-whitespace": 230
+  }
+}

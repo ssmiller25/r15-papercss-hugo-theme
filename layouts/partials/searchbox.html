@@ -1,7 +1,8 @@
-<!-- Search Box UI for Hugo site -->
-{{ if site.Params.enable_search }}
-<div id="search-container" style="margin: 1em 0;">
-  <input type="search" id="searchBox" placeholder="Search..." style="width: 100%; padding: 0.5em;">
-  <div id="searchResults" class="paper" style="margin-top: 1em; padding: 1em; border-radius: 4px; display: none;"></div>
+{{- /* Search Box UI for Hugo site. The opening chomps let the caller's indentation land on the <div> instead of a whitespace-only line of its own. Presentation lives in assets/css/custom.css. */ -}}
+{{- if site.Params.enable_search -}}
+<div id="search-container">
+  <label for="search-box" class="visually-hidden">Search</label>
+  <input type="search" id="search-box" placeholder="Search...">
+  <div id="search-results" class="paper is-hidden"></div>
 </div>
-{{ end }}
+{{- end -}}

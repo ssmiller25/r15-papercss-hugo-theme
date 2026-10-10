@@ -1,17 +1,11 @@
-{{ $arg := .Get 0 }}
-{{ $class := "" }}
-{{ if eq $arg "dashed" }}
-  {{ $class = "border-dashed" }}
-{{ else if eq $arg "dotted" }}
-  {{ $class = "border-dotted" }}
-{{ else if eq $arg "dashed thick" }}
-  {{ $class = "border-dashed border-thick" }}
-{{ else if eq $arg "dotted thick" }}
-  {{ $class = "border-dotted border-thick" }}
-{{ end }}
-
+{{- $style := .Get "style" | default "" -}}
+{{- $classes := dict "" "" "dashed" "border-dashed" "dotted" "border-dotted" "dashed thick" "border-dashed border-thick" "dotted thick" "border-dotted border-thick" -}}
+{{- if not (isset $classes $style) -}}
+  {{- errorf "shortcode %q: invalid 'style' %q at %s; accepted values: (none), dashed, dotted, dashed thick, dotted thick" .Name $style .Position -}}
+{{- end -}}
+{{- $class := index $classes $style -}}
 <div class="child-borders">
-  <div class="sm col {{ $class }}">
+  <div class="sm col{{ with $class }} {{ . }}{{ end }}">
     {{ .Inner | markdownify }}
   </div>
 </div>

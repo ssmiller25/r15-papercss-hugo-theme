@@ -4,111 +4,105 @@
 {{ .Content }}
 
 {{ if site.Data.commits }}
-  {{ $commits := site.Data.commits }}
+{{ $commits := site.Data.commits }}
 
   <div id="commits-container">
     <div id="commits-list"></div>
-    
-    <nav id="pagination-nav" style="margin-top: 2rem; text-align: center; display: none;">
-      <button id="prev-page" style="margin: 0 0.5rem; padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 3px;">
-        ← Newer
-      </button>
-      
-      <span id="page-info" style="margin: 0 1rem;"></span>
-      
-      <button id="next-page" style="margin: 0 0.5rem; padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 3px;">
-        Older →
-      </button>
+
+    <nav id="pagination-nav" class="commit-pagination is-hidden">
+      <button type="button" id="prev-page" class="commit-page-btn">← Newer</button>
+      <span id="page-info" class="commit-page-info"></span>
+      <button type="button" id="next-page" class="commit-page-btn">Older →</button>
     </nav>
   </div>
-  
+
   <script>
-    // Embed commits data
+    // Embed commits data. All rendering below builds DOM nodes and assigns
+    // text via textContent, so a commit message containing markup is shown as
+    // text rather than executed.
     const commitsData = {{ $commits | jsonify | safeJS }};
     const commitsPerPage = 10;
     let currentPage = 1;
-    
-    // Get GitHub repo from Hugo config (set in site's config.yaml)
+
     const githubRepo = {{ site.Params.github_repo | default "" | jsonify | safeJS }};
-    
+
+    function makeElement(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined && text !== null) node.textContent = text;
+      return node;
+    }
+
+    function makeLink(url, label, external) {
+      const link = makeElement('a', null, label);
+      link.href = url;
+      if (external) {
+        link.target = '_blank';
+        link.rel = 'noopener';
+      }
+      return link;
+    }
+
     function renderCommits() {
       const container = document.getElementById('commits-list');
+      container.textContent = '';
       const startIndex = (currentPage - 1) * commitsPerPage;
       const endIndex = Math.min(startIndex + commitsPerPage, commitsData.length);
       const pageCommits = commitsData.slice(startIndex, endIndex);
-      
-      let html = '';
-      
+
       pageCommits.forEach(commit => {
-        // Build GitHub commit URL dynamically from config
-        const commitUrl = githubRepo ? 
-          `https://github.com/${githubRepo}/commit/${commit.full_hash}` : 
+        const commitUrl = githubRepo ?
+          `https://github.com/${githubRepo}/commit/${commit.full_hash}` :
           '#';
-        
-        html += `
-          <article class="commit-entry" style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #eee;">
-            <h2 style="margin-bottom: 0.5rem;">
-              <a href="${commitUrl}" 
-                 style="text-decoration: none; color: inherit;"
-                 target="_blank" rel="noopener">
-                ${commit.subject}
-              </a>
-            </h2>
-            
-            <div class="commit-meta" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
-              <span class="commit-hash" style="font-family: monospace; background: #f4f4f4; padding: 2px 6px; border-radius: 3px;">
-                ${commit.short_hash}
-              </span>
-              <span class="commit-date" style="margin-left: 1rem;">
-                ${commit.date}
-              </span>
-              <span class="commit-author" style="margin-left: 1rem;">
-                by ${commit.author_name}
-              </span>
-            </div>
-            
-            ${commit.body ? `<div class="commit-body" style="margin: 1rem 0;">${commit.body.replace(/\\n/g, '<br>')}</div>` : ''}
-            
-            ${commit.changed_files_mapped && commit.changed_files_mapped.length > 0 ? `
-              <div class="commit-files" style="margin-top: 1rem;">
-                <strong>Changed files:</strong>
-                <ul style="list-style: none; padding-left: 0; margin-top: 0.5rem;">
-                  ${commit.changed_files_mapped.map(file => `
-                    <li style="margin-bottom: 0.3rem;">
-                      <span style="margin-right: 0.5rem;" title="${file.status_info.label}">${file.status_info.icon}</span>
-                      ${file.type === 'page' ? `
-                        <a href="${file.url}" style="text-decoration: none;">${file.file_path}</a>
-                      ` : file.type === 'section' ? `
-                        <a href="${file.url}" style="text-decoration: none;">${file.file_path}</a>
-                      ` : `
-                        <a href="${file.url}" style="text-decoration: none;" target="_blank" rel="noopener">${file.file_path} (GitHub)</a>
-                      `}
-                      <span style="color: #999; font-size: 0.85rem; margin-left: 0.5rem;">${file.status_info.label}</span>
-                    </li>
-                  `).join('')}
-                </ul>
-              </div>
-            ` : ''}
-          </article>
-        `;
+        const article = makeElement('article', 'commit-entry');
+
+        const heading = makeElement('h2', 'commit-heading');
+        heading.appendChild(makeLink(commitUrl, commit.subject, true));
+        article.appendChild(heading);
+
+        const meta = makeElement('div', 'commit-meta');
+        meta.appendChild(makeElement('span', 'commit-hash', commit.short_hash));
+        meta.appendChild(makeElement('span', 'commit-date', commit.date));
+        meta.appendChild(makeElement('span', 'commit-author', 'by ' + commit.author_name));
+        article.appendChild(meta);
+
+        if (commit.body) {
+          const body = makeElement('div', 'commit-body');
+          commit.body.split('\n').forEach((line, index) => {
+            if (index > 0) body.appendChild(document.createElement('br'));
+            body.appendChild(document.createTextNode(line));
+          });
+          article.appendChild(body);
+        }
+
+        if (commit.changed_files_mapped && commit.changed_files_mapped.length > 0) {
+          const files = makeElement('div', 'commit-files');
+          files.appendChild(makeElement('strong', null, 'Changed files:'));
+          const list = makeElement('ul', 'commit-files-list');
+          commit.changed_files_mapped.forEach(file => {
+            const item = document.createElement('li');
+            const status = makeElement('span', 'commit-file-status', file.status_info.icon);
+            status.title = file.status_info.label;
+            item.appendChild(status);
+            const external = file.type !== 'page' && file.type !== 'section';
+            item.appendChild(makeLink(file.url, file.file_path + (external ? ' (GitHub)' : ''), external));
+            item.appendChild(makeElement('span', 'commit-file-label', file.status_info.label));
+            list.appendChild(item);
+          });
+          files.appendChild(list);
+          article.appendChild(files);
+        }
+
+        container.appendChild(article);
       });
-      
-      container.innerHTML = html;
-      
-      // Update pagination
+
       const totalPages = Math.ceil(commitsData.length / commitsPerPage);
       document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
-      
       document.getElementById('prev-page').disabled = currentPage === 1;
-      document.getElementById('prev-page').style.opacity = currentPage === 1 ? '0.5' : '1';
-      
       document.getElementById('next-page').disabled = currentPage === totalPages;
-      document.getElementById('next-page').style.opacity = currentPage === totalPages ? '0.5' : '1';
-      
-      document.getElementById('pagination-nav').style.display = totalPages > 1 ? 'block' : 'none';
+      document.getElementById('pagination-nav').classList.toggle('is-hidden', totalPages <= 1);
     }
-    
-    // Event listeners
+
     document.getElementById('prev-page').addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;
@@ -116,7 +110,7 @@
         window.scrollTo(0, 0);
       }
     });
-    
+
     document.getElementById('next-page').addEventListener('click', () => {
       const totalPages = Math.ceil(commitsData.length / commitsPerPage);
       if (currentPage < totalPages) {
@@ -125,26 +119,16 @@
         window.scrollTo(0, 0);
       }
     });
-    
-    // Initial render
+
     renderCommits();
   </script>
-  
+
 {{ else }}
-  {{/* Fallback: Show regular content (blog posts or _index.md content) */}}
-  {{ $paginator := .Paginate (where site.RegularPages "Type" "in" site.Params.mainSections) }}
-  
-  {{ range $paginator.Pages.ByPublishDate.Reverse }}
-    <h2 class="post-list {{ if ne .Params.show_summary false }}summary{{ end }}">
-      <a href="{{ .RelPermalink }}">
-        {{ .Title }}
-      </a>
-    </h2>
-    {{ if ne .Params.show_summary false }}
-      {{ .Summary }}
-    {{ end }}
-  {{ end }}
-  {{ template "partials/pagination.html" . }}
+{{/* Fallback: Show regular content (blog posts or _index.md content) */}}
+{{ $paginator := .Paginate (where site.RegularPages "Type" "in" site.Params.mainSections) }}
+
+{{ partial "page-list.html" (dict "pages" $paginator.Pages "sort" "date-desc") }}
+  {{ partial "pagination.html" . }}
 {{ end }}
 
 {{ end }}
