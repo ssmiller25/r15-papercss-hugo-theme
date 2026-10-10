@@ -13,7 +13,7 @@
 - [x] 1.5 Record the measured baseline in the repository, and verify a deliberately introduced violation fails CI while an unmodified build passes
 - [x] 1.6 Replace the `layouts/**/*.html` glob with explicit discovery of generated pages so root-level pages are included, and verify the count of validated files equals the count of generated pages
 - [x] 1.7 Add a `check` target to the `Makefile` invoking the same gate sequence as CI, and verify it appears in `make help` and runs the identical commands
-- [x] 1.8 Fix `codeql.yml`, which requested `languages: html, javascript` and so aborted in `init` with "Did not recognize the following languages: html" on every run, and verify the job reaches the analysis step
+- [x] 1.8 Resolve the broken CodeQL configuration, which requested `languages: html, javascript` and aborted in `init` with "Did not recognize the following languages: html" on every run. The repository's default CodeQL setup already scans `actions`, `javascript-typescript`, and `python`, and GitHub rejects an advanced configuration's results while default setup is enabled, so the redundant `codeql.yml` is removed and code scanning is left configured in one place
 - [x] 1.9 Scope the CSS gate to the theme's own stylesheet and clear the resulting violations in `assets/css/custom.css`, including one `no-descending-specificity` that no source order can satisfy and that is resolved with a documented rule exception rather than a reorder
 - [x] 1.10 Make the build clean its destination (`--cleanDestinationDir`) so the gate cannot validate output left behind by a previous build
 

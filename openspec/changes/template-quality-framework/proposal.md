@@ -82,7 +82,7 @@ None. This project has no existing specs; `openspec list --specs` is empty.
 
 **Tooling and CI**
 - `.github/workflows/web-lint.yml` — rewritten to run the single `make check` gate, which builds, validates output, and lints CSS
-- `.github/workflows/codeql.yml` — `languages: html, javascript` corrected to `javascript-typescript`; CodeQL has no HTML analyzer
+- `.github/workflows/codeql.yml` — removed; GitHub's default CodeQL setup (actions, javascript-typescript, python) already scans this repository, and an advanced configuration cannot upload while default setup is enabled
 - `.devcontainer/Dockerfile` — `htmlhint` removed, `html-validate` added, all three linters pinned to exact versions
 - New `.htmlvalidate.json` (rule set) and `.htmlvalidate-baseline.json` (recorded baseline), plus `scripts/check-html.mjs`, which drives `html-validate`, scopes validation to theme-rendered pages, and enforces the per-rule ratchet
 - `Makefile` — `check` and `check-update-baseline` targets; `build-example` now cleans its destination; the missing `generate-commits` target
