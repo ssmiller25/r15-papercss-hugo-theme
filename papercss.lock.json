@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/ssmiller25/papercss",
+  "version": "2.0.1",
+  "tag": "v2.0.1",
+  "released": "2026-10-10",
+  "note": "Referenced, not vendored: the theme links the pinned, immutable tag through jsDelivr and pins the bytes with a subresource-integrity digest. Do not float the tag.",
+  "stylesheet": {
+    "url": "https://cdn.jsdelivr.net/gh/ssmiller25/papercss@v2.0.1/dist/paper.min.css",
+    "integrity": "sha384-X6OIslUE2lkIrtz1qoMMAFZrjXkE+wjL6x+tSbtQa31zv1YQ2CBp4gSSTJ/dd6LS",
+    "bytes": 56984
+  }
+}

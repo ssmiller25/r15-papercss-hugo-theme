@@ -1,21 +1,9 @@
-{{ $headings := findRE "<h2.*?>(.|\n])+?</h2>" .Content }}
-{{- if ge (len $headings) 2 -}}
+{{- if .TableOfContents -}}
+{{- $toc := replaceRE `<nav id="TableOfContents">` `<nav id="TableOfContents" aria-label="Table of contents">` .TableOfContents -}}
 <div class="child-borders">
-  <div class="toc border" aria-labelledby="toc-heading">
+  <div class="toc border">
     <h2 id="toc-heading">Table of contents</h2>
-    <ol>
-{{ range $headings }}
-        <li>
-{{ $id := findRE "id=\".*\"" . }}
-{{ $id = index $id 0 }}
-{{ $id = strings.TrimPrefix "id=\"" $id }}
-{{ $id = strings.TrimSuffix "\"" $id }}
-          <a href="#{{ $id }}">
-            {{ . | htmlUnescape | plainify }}
-          </a>
-        </li>
-{{ end }}
-    </ol>
+    {{ $toc | safeHTML }}
   </div>
 </div>
-{{ end }}
+{{- end -}}

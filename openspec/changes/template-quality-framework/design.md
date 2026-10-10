@@ -4,9 +4,9 @@
 
 See `proposal.md` for motivation. The constraints that shape the approach:
 
-**Upstream was frozen, and is now being maintained.** `static/css/paper.css` (3,327 lines) is byte-identical to the published `v1.9.2` from 2023-05-29 — which was simultaneously the newest tag, the current npm `latest`, and the current `master` CSS state. There had been no CSS change upstream in over three years. The repository was not archived (4,194 stars, 227 forks, 38 open issues), so fixes were technically possible, but they did not land: PR #311 — a `mergeable_state: clean`, DCO-signed fix for the height clip this audit found — had been open since 2026-09-02, and its issue #272 since 2022-03-23. Four Dependabot branches carrying known-CVE bumps had been unmerged since early 2023.
+**Upstream was frozen; it is now maintained in a copy, and released.** `static/css/paper.css` (3,327 lines) is byte-identical to the published `v1.9.2` from 2023-05-29 — which was simultaneously the newest tag, the current npm `latest`, and the current `master` CSS state of `papercss/papercss`. There had been no CSS change upstream in over three years. The original repository was not archived, so fixes were technically possible, but they did not land: PR #311 — a clean, DCO-signed fix for the height clip this audit found — had been open since 2026-09-02, and its issue #272 since 2022-03-23. That is why the framework is now maintained as a copy at [`ssmiller25/papercss`](https://github.com/ssmiller25/papercss), which shipped **`v2.0.0` on 2026-10-10** and patched it to **`v2.0.1`** the same day — immutable releases, each carrying a build-provenance attestation and a signed tag. The theme references `v2.0.1`: the four defects fixed in 2.0, plus the fonts 2.0.1 restores.
 
-**That is no longer the situation, and this design was written against it.** PaperCSS is being maintained as 2.x, and the four defects this change originally assumed the theme had to own are being fixed at their source. Two consequences run through everything below: the override layer is no longer permanent architecture, and group 6 is gated on a release rather than being free to start. What has *not* changed is the finding itself — the defects are real, they were the theme's to work around or not, and the verification gates that exposed them are needed either way.
+**That is no longer the situation, and this design was written against it.** PaperCSS is maintained as 2.x in the `ssmiller25/papercss` copy, and the four defects this change originally assumed the theme had to own are fixed at their source. Two consequences run through everything below: the override layer is no longer permanent architecture, and group 6 is a straight adoption of a published release rather than a wait. What has *not* changed is the finding itself — the defects are real, they were the theme's to work around or not, and the verification gates that exposed them are needed either way.
 
 **Both existing workflows were failing on every run, and one gate had never run at all.** Neither has ever been green, so "the build passes" was never a claim this repository could make.
 
@@ -50,7 +50,7 @@ Two corrections to earlier assumptions in this change, both from measurement:
 - One home per piece of markup, enforced structurally.
 - Valid, landmark-bearing, keyboard-operable HTML.
 - Byte-stable builds.
-- PaperCSS defects fixed locally, permanently, with the vendored file untouched.
+- PaperCSS's published release referenced as-is, pinned by tag and integrity digest, with local overrides removed where `v2.0.1` makes them unnecessary.
 
 **Non-Goals:**
 - Modernizing Hugo template APIs. `theme.toml` declares `min_version = "0.81.0"` but `.devcontainer/Dockerfile` pins `HUGO_VERSION=0.131.0` and `head.html:30` uses `resources.ExecuteAsTemplate`, which postdates the declared floor. The fix is to make the declaration *truthful* at the version already exercised, not to raise it.
@@ -67,15 +67,15 @@ Two corrections to earlier assumptions in this change, both from measurement:
 
 As originally reasoned: the vendored file was byte-identical to the newest available CSS, so forking would track zero upstream delta while permanently absorbing upstream's bug-fix burden and obliging every consumer to a non-standard PaperCSS. On that basis the override layer was declared permanent architecture, and this change was going to carry four framework defects indefinitely.
 
-That reasoning was sound given the evidence, and the evidence has changed. PaperCSS is being maintained as 2.x. The four defects — the collapsed tab order, the height clip, the invalid padding value, and the invalid documented markup — are being fixed at their source, in a repository whose verification gates now assert the fixes. A theme-side override for a defect that is landing upstream is two corrections for one bug, one of which must later be deleted.
+That reasoning was sound given the evidence, and the evidence has changed. PaperCSS is maintained as 2.x at `ssmiller25/papercss`, and the four defects are fixed at their source in that repository, whose own verification gates assert the fixes. They are shipped: `v2.0.1` is a published, immutable release. A theme-side override for a defect that is already fixed upstream is two corrections for one bug, one of which must later be deleted.
 
-So the ordering inverts. Group 6 waits for the 2.0 release, adopts it, and removes the overrides that are no longer needed. What survives is the residue 2.0 does not fix, documented as such.
+So the ordering inverts. Group 6 adopts the published `v2.0.1` artifact and its font files, and removes the overrides that are no longer needed. What survives is the residue 2.0 does not fix, documented as such.
 
-**What does not change.** The vendored file is still unmodified from its published artifact, and every theme-side correction still lives outside it. That was a good constraint when it meant "do not fork the CSS" and it remains a good constraint when it means "vendor 2.0 byte for byte, and put anything else in the override layer". Separately, the Dependabot CVE reasoning still holds and is unaffected: `minimist` and `json5` are build-time dependencies of PaperCSS's own toolchain, consumers use the prebuilt `dist/paper.css` and never run that build, so they carry no risk to this theme.
+**What does not change.** The framework is still consumed unmodified from a published release, and every theme-side correction still lives outside it. That was a good constraint when it meant "do not fork the CSS" and it remains a good constraint when it means "reference the pinned release, and put anything else in the override layer". Separately, the Dependabot CVE reasoning still holds and is unaffected: `minimist` and `json5` are build-time dependencies of PaperCSS's own toolchain, consumers use the prebuilt `dist/` artifacts and never run that build, so they carry no risk to this theme.
 
 **Consequence.** `assets/css/custom.css` is smaller and less load-bearing than originally planned — it is a fallback layer rather than the primary home for four corrections. It still warrants minification and fingerprinting, because the residue is real and a consumer's browser should not cache it indefinitely, but it no longer justifies the "each rule annotated by the framework rule it counteracts" burden across a large surface.
 
-**On why the theme cannot simply adopt the fork's working tree.** The theme vendors a *published* artifact so it can verify byte-identity. Consuming an unreleased local build would make the theme's own provenance unverifiable, which is the property that made Decision 1's constraint worth keeping in the first place. Hence the hard gate at task 6.1.
+**On why the theme references a published release and not the maintained copy's working tree.** The theme references a *published* release so the bytes it applies are identifiable and integrity-checked, rather than tracking a mutable branch. Consuming an unreleased local build would make the theme's own provenance unverifiable, which is the property that made Decision 1's constraint worth keeping in the first place. `v2.0.1` is published and attested, so that gate — task 6.1 — is satisfied, and the theme references the tagged release through jsDelivr, pinned by tag and subresource-integrity digest, rather than a branch.
 
 ### Decision 2: Gate on generated output, never on templates
 
@@ -107,7 +107,7 @@ The stricter requirement — tightening the baseline in the same change as a del
 
 Two distinct constraints, deliberately treated differently.
 
-**The identifier prefix is a hard contract.** Every collapsible rule in the vendored CSS is conditioned on `input[id^=collapsible]`. The theme MUST generate matching identifiers — there is no way to implement a PaperCSS collapsible without this. PaperCSS constrained the *shape*; it did not constrain how the suffix is derived.
+**The identifier prefix is a hard contract.** Every collapsible rule in the framework CSS is conditioned on `input[id^=collapsible]`. The theme MUST generate matching identifiers — there is no way to implement a PaperCSS collapsible without this. PaperCSS constrained the *shape*; it did not constrain how the suffix is derived.
 
 **The current derivation is a defect.** `shortcodes/collapsible.html:4-6` derives the suffix from `delimit (shuffle (split (md5 "yolo") ""))` — a **constant** seed, reshuffled per invocation. Every build emits different HTML, which defeats output diffing, invalidates Hugo's cache, and makes preview deploys irreproducible. `collapsible_{{ .Ordinal }}` satisfies the same prefix contract deterministically.
 
@@ -124,22 +124,24 @@ So the `<label>`-in-`<button>` nesting is the theme's invention, not a framework
 
 ### Decision 6: The four PaperCSS defects are fixed in PaperCSS 2.0, not overridden here
 
-| Defect | Location | Where it is now fixed | Theme work that remains |
+| Defect | Location (v1.9.2) | Where it is now fixed | Theme work that remains |
 |---|---|---|---|
-| `input { display: none }` drops the toggle from the tab order; mobile nav is keyboard-unreachable. Affects nav *and* the `collapsible` shortcode. | `paper.css:1323` | PaperCSS 2.0, group 4 — visually-hidden pattern that keeps the control focusable | none, once adopted (6.3, 6.4) |
-| `.bar1/.bar2/.bar3` are `<div>`s; HTML forbids flow content in `<label>`. Styleable as `<span>`. | theme markup | PaperCSS 2.0, group 6 fixes the *documented* markup | **yes** — the theme's own `nav.html` must change (6.6) |
-| `padding: none` — not a valid CSS value | `paper.css:3296` | Already corrected in the 2.0 working tree | none, once adopted |
-| `max-height: 960px` clips tall bodies | `paper.css:1330` | PaperCSS 2.0, group 5 | none, once adopted |
+| `input { display: none }` drops the toggle from the tab order; mobile nav is keyboard-unreachable. Affects nav *and* the `collapsible` shortcode. | `paper.css:1323` | 2.0 — `.collapsible > input` uses the visually-hidden pattern and `:focus-visible` shows a focus indicator | none, once adopted (6.3, 6.4) |
+| `.bar1/.bar2/.bar3` are `<div>`s; HTML forbids flow content in `<label>`. Styleable as `<span>`. | theme markup | 2.0 changes the *documented* markup (and the switch tile) to `<span>`; the CSS still styles only by class | **yes** — the theme's own `nav.html` must change (6.6) |
+| `padding: none` — not a valid CSS value | `paper.css:3296` | 2.0 — the declaration is gone | none, once adopted |
+| `max-height: 960px` clips tall bodies | `paper.css:1330` | 2.0 — the body is a `0fr → 1fr` grid row; the cap is gone | none, once adopted |
+
+Each fix was confirmed against the shipped `v2.0.1` asset rather than the release notes: the stylesheet carries the visually-hidden `.collapsible > input` rule, has no `max-height: 960px` on a collapsible body and no `padding: none`, and contains no `fonts.googleapis` import.
 
 **On the first:** the rule is load-bearing for PaperCSS's click-toggle pattern, so it could not simply be deleted. A correct fix swaps in a visually-hidden approach or exploits `input:focus-visible + label`, and that is the kind of change that wants the framework's owner making the call. It now has one.
 
 **On the second:** this is the one defect the theme never fully delegated, and it is worth being precise about why. PaperCSS styles `.bar1/.bar2/.bar3` by class alone, so the element type is the theme's choice and 2.0 changing its own documentation does not change what the theme renders. `nav.html:9-11` emits `<div class="barN">` inside a `<label>`, which is invalid on both sides of the upgrade. The theme has to edit its markup either way; what 2.0 buys is that the edit now matches the documented contract instead of contradicting it.
 
-**On the fourth:** PR #311's `grid-template-rows: 0fr → 1fr` approach was the right fix and is what 2.0 implements. Issue #272 and PR #311 were open against a repository nobody was merging into, which is the whole reason a fork became the right answer.
+**On the fourth:** PR #311's `grid-template-rows: 0fr → 1fr` approach was the right fix and is what `v2.0.0` implements. Issue #272 and PR #311 were open against a repository nobody was merging into, which is the whole reason a maintained copy became the right answer.
 
 **Why the defects existed this long is now partly answerable.** The accessibility issues in the upstream tracker numbered eight, the oldest dating to 2017, and none mentioned the toggle's reachability. PR #277 ("Feature display input in collapsible") *was* merged in November 2022, but reading it shows it fixed form elements inside the collapsible *body* (issue #271), not the toggle's own `display: none`. So the finding was genuinely unreported — which is also why the 2.x work carries its own verification gates rather than relying on review. A defect nobody reported is a defect no review would catch.
 
-**What the theme keeps.** Per task 6.11, whatever 2.0 does not fix stays in the override layer with its rationale recorded. That residue is expected to be small, and a theme that has to say "we still have to work around this one" has learned something useful about the release.
+**What the theme keeps.** Per task 6.11, whatever 2.0 does not fix stays in the override layer with its rationale recorded, and needs an upstream report. The residue is small, and one item is already known: the dark palette still sets `--primary-text` to `#41403e` — the same value as `--main-background` — so text resolved from it is invisible on a dark ground. Neither `2.0.0` nor `2.0.1` fixed this, which confirms it is a genuine theme-side correction for the `add-dark-mode-toggle` change to carry, not an override waiting to be deleted.
 
 ### Decision 7: Semantics over PaperCSS's own markup in one specific place
 
@@ -165,11 +167,9 @@ The distinction matters. A disabled rule is invisible to the next person who rea
 
 ### Decision 10: The CSS gate covers the theme's stylesheet only
 
-`static/css/paper.css` is vendored and, per Decision 1, stays byte-identical to upstream v1.9.2. Linting it alongside `assets/css/**/*.css` reports ~980 violations that this change cannot fix without violating its own central constraint, so the gate is scoped to the theme's own stylesheet and the exclusion is recorded as a framework exception — which is precisely the documented-exception case the markup-constraints requirement describes.
+The framework stylesheet is referenced from the pinned release, not stored in the repository, so the CSS gate lints the theme's own `assets/css/**/*.css` only. That scoping leaves a handful of violations, all in `assets/css/custom.css`, all genuinely fixable. `no-descending-specificity` on the nav override is resolved by expressing the nav rule as `nav a:link, nav a:visited`, whose specificity range no longer straddles the theme's anchor rule, so the rule is enforceable without an exception.
 
-That scoping is what made the gate reachable at all: once the vendored file is out of the way, four violations remain, all in `assets/css/custom.css`, all genuinely fixable. One of them, `no-descending-specificity` on the nav override, is not fixable by reordering at all. The nav rule must out-specify both `a` and `a:visited`, giving it a specificity range that straddles theirs, and no source order satisfies the rule for an interleaved pair like that. Since every nav selector wins on specificity regardless of order, the honest resolution is a documented `stylelint-disable` at the rule, with the reasoning in a comment beside it.
-
-**Alternative considered:** commit the vendored stylesheet's violations as a baseline, as the HTML gate does. Rejected — a baseline legitimizes them and invites them being "fixed" in a file that must not change; an upstream defect list is the right instrument.
+**Alternative considered:** lint the referenced framework stylesheet as well. Rejected — it is not theme-authored and is not modifiable; its violations are upstream's to fix, not ours.
 
 ### Decision 11: The gate must not be able to read stale output
 
@@ -185,6 +185,18 @@ The fix is `javascript-typescript`, the current identifier for the JavaScript an
 
 **On the general lesson:** the reason these survived is that a permanently red check reads as a known annoyance rather than as an unverified claim. A gate that cannot fail and a gate that is always failing look identical from the outside. Getting to green is what makes the remaining red meaningful.
 
+### Decision 13: The theme relies on PaperCSS's bundled, self-hosted fonts
+
+`v2.0.0` dropped the Google Fonts `@import` without replacing it, so a consumer who changed nothing got `sans-serif` — the theme stopped looking like itself. `v2.0.1` reverses that: the stylesheet carries five `@font-face` rules for Neucha and Patrick Hand SC whose `url()` resolves to files shipped beside it, and they load by default. So the intended typography comes back, self-hosted by the framework rather than by Google — the property the `2.0.0` change was reaching for, achieved without losing the look.
+
+**Chosen:** rely on `v2.0.1`'s bundled fonts. The theme references the pinned stylesheet and adds no Google `<link>`; because jsDelivr serves the whole tagged `dist/` tree, the `@font-face` `url()`s resolve to the tagged fonts on the same origin. It is strictly better than the fallback stack this decision previously chose against `v2.0.0`: same look, no consumer action.
+
+**The relative-path requirement.** The `@font-face` `url()`s are relative to the stylesheet, so whatever serves the stylesheet must also serve the fonts beside it. jsDelivr does, for the tagged release; verification confirms each referenced asset resolves. A missing font would otherwise fall back to `sans-serif` silently, with no build error.
+
+**Alternative considered:** vendor the font files into the theme. Rejected — the release is immutable and integrity-pinned, so there is no need to duplicate upstream artifacts or carry binary blobs; referencing them keeps the repository lean.
+
+**Consequence.** The changelog notes that a consumer who followed `2.0.0`'s `UPGRADE.md` and added the Google `<link>` should remove it, because `2.0.1` loads the fonts itself and the link would double-load them.
+
 ## Risks / Trade-offs
 
 **Gate reports the alias template's `element-required-content` errors** → Hugo's built-in alias output is not theme-authored, and it accounts for all 9 of them. Scope validation to theme-rendered pages and document the exclusion; per Decision 9 the exclusion is a detection step in the validator, reported on every run, not a rule toggle in `.htmlvalidate.json`.
@@ -197,11 +209,13 @@ The fix is `javascript-typescript`, the current identifier for the JavaScript an
 
 **Raising `min_version` to 0.131.0 breaks consumers** → They are already broken on 0.81.0; the template cannot run there. State this plainly in the changelog rather than framing it as a new restriction.
 
-**Override layer drifts from the vendored CSS** → *Now expected rather than hypothetical.* PaperCSS 2.0 is a deliberate upgrade of the vendored file, and overrides written against 1.9.2 may double-apply or conflict. This is precisely why group 6 audits what 2.0 actually fixed by inspecting the shipped stylesheet (6.3) before removing anything (6.4), rather than trusting release notes and deleting rules by memory. Record the vendored version and a checksum so future drift is detectable.
+**Override layer drifts from the framework release** → *Now expected rather than hypothetical.* `v2.0.1` is a deliberate upgrade from 1.9.2, and overrides written against the old version may double-apply or conflict. This is precisely why group 6 audits what 2.0 actually fixed by inspecting the shipped stylesheet (6.3) before removing anything (6.4), rather than trusting release notes and deleting rules by memory. Record the referenced version and its integrity digest so future drift is detectable.
 
 **`custom.css` becomes load-bearing** → *Superseded.* With the framework defects fixed in 2.0, the override layer is a fallback rather than the home for four corrections, so it is no longer load-bearing enough to justify annotating every rule with the framework rule it counteracts. Fingerprinting and minification still stand, because the residue is real.
 
-**Vendored `paper.css` still `@import`s Google Fonts at the top of the file** → Out of scope for v1.9.2, and *no longer out of scope after 2.0.* PaperCSS 2.0 defaults that import off. The theme loads no webfonts of its own — nothing in `layouts/` or `exampleSite/config.yaml` references Google Fonts — so it inherits the framework's `@import` entirely and its typography will change silently on upgrade. That makes task 6.7 a required adoption step rather than a nice-to-have, and it is the one place where this upgrade is more likely to surprise a consumer than the accessibility fixes it delivers.
+**The framework's fonts must resolve from the referenced stylesheet** → `v2.0.1` loads its fonts from `url("fonts/…")` relative to the stylesheet, so whatever serves the stylesheet must serve the fonts beside it. jsDelivr does, for the tagged release; verification (Decision 13) fetches the stylesheet and confirms its integrity and that each referenced asset resolves. The failure mode this guards against is silent — a missing file falls back to `sans-serif` with no build error — so it is checked explicitly rather than assumed.
+
+**The dark-mode component fix overlaps the in-flight `add-dark-mode-toggle` change** → 2.0 makes dark mode theme every component (pressed buttons, striped bars, table rules, shadows) and grows the property surface from 48 to 60. The `add-dark-mode-toggle` change was designed against the v1.9.2 palette and carries local corrections for exactly those components; each must be re-checked against `v2.0.1` and any that are now redundant dropped. The `--primary-text` defect that change identified is confirmed still present in `v2.0.1` (Decision 6), so that correction stays and needs an upstream report.
 
 ## Migration Plan
 
@@ -211,19 +225,18 @@ The fix is `javascript-typescript`, the current identifier for the JavaScript an
 4. **Structure.** Add landmarks, footer, and skip link to `baseof.html`; consolidate the four copies of the listing markup into one partial; delete the dead `post-list.html`; populate `404.html`.
 5. **Semantics.** Listing markup, heading outline, `toc.html` onto `.TableOfContents`, search labeling, image attributes, `aria-current` on nav.
 6. **Determinism.** Replace the `shuffle`/`md5` derivation with `{{ .Ordinal }}`.
-7. **PaperCSS 2.0 adoption.** *Gated on the release — see task 6.1, and this step does not start until it exists.* Adopt the published 2.0 artifact byte for byte, audit what it actually fixed against the shipped stylesheet, drop the overrides it made unnecessary, adopt the font-loading change explicitly, and record the residue. This step absorbs what were going to be four override-layer tasks, plus minification and fingerprinting.
+7. **PaperCSS 2.0 adoption.** Reference the pinned `v2.0.1` release from jsDelivr (recording the version, URL, and integrity digest), audit what it actually fixed against the shipped stylesheet, drop the overrides it made unnecessary, rely on its bundled self-hosted fonts (Decision 13), and record the residue. This step absorbs what were going to be four override-layer tasks, plus minification and fingerprinting.
 8. **Security.** Convert the commit renderer's `innerHTML` sink to inert text nodes.
 9. **Shortcodes.** Uniform contract across all seven, with validation failures.
 10. **Documentation.** Correct the changelog and README; reconcile `min_version` with the enforced gate.
 
-Rollback is per-step: steps 1–3 change no rendered output, and steps 4–9 each land as an independent commit that can be reverted without touching the gates established in step 1. Step 7 is reversible in one move — reverting the vendored stylesheet and the overrides together restores the previous state — but it should not be reverted alone, because 6.6's markup change and 6.7's font decision are only correct against 2.0.
+Rollback is per-step: steps 1–3 change no rendered output, and steps 4–9 each land as an independent commit that can be reverted without touching the gates established in step 1. Step 7 is reversible in one move — reverting the stylesheet reference and the overrides together restores the previous state — but it should not be reverted alone, because 6.6's markup change and 6.7's font behavior are only correct against 2.0.
 
 Steps 4–6 and 8–10 can proceed in any order and none of them wait on step 7. The gate established in step 1 measures all of them, so their progress is visible throughout.
 
 ## Open Questions
 
 - **Should the theme bump past Hugo 0.131.0 to adopt `layouts/_partials/` and `layouts/_shortcodes/`?** Genuinely deferrable — it changes no spec in this change, only future task sequencing. It becomes worth doing when a future Hugo bump is motivated by something else, at which point the directory migration is mechanical.
-- **Should the theme link PaperCSS's webfonts itself, or adopt the fallback stack?** The Google Fonts `@import` that PaperCSS 2.0 stops shipping was previously out of scope here, because it lived in a file the theme did not modify. After 2.0 it becomes the theme's decision: it inherits the fonts from the framework today and inherits nothing tomorrow. Task 6.7 forces the choice, and the honest answer may be "adopt the fallback and stop depending on a render-blocking third party at all" — which is a visual decision, not a technical one, and belongs to whoever maintains the demo site.
 - **Should the repo's `codeql.yml` be deleted in favour of GitHub's default CodeQL setup?** The default setup already analyzes `actions`, `javascript-typescript`, and `python` for this repository, so the committed workflow is duplicative as well as previously broken. Removing it would leave code scanning configured in one place. Deferred: it is a repository-settings-adjacent decision, not a theme-quality one, and it does not block a green pipeline.
 - **How should goldmark's colon-bearing footnote ids (`fn:1`) be handled?** Raised by the measured baseline. `valid-id` is a real conformance failure, but the ids are emitted by Hugo's markdown renderer rather than by theme markup, so every option is a workaround: post-process the rendered `.Content`, accept them under a documented framework exception, or report upstream. Needs a decision before the baseline reaches zero.
 - **Should the theme migrate off Hugo's deprecated Universal Analytics template?** Raised by the whitespace cleanup, and the largest single block of remaining gate noise: 144 errors, 6 whitespace-only lines on every page, traced to `head.html`'s call to `_internal/google_analytics.html`. Three facts make this more than a cosmetic problem. Hugo 0.131 warns on every build that UA was replaced by GA4; the internal template emits **no script tag at all**, only whitespace, so the theme's analytics are already dead; and `UA-…` identifiers are not interchangeable with `G-…` ones, so emitting a GA4 `gtag` snippet means consumers must replace `googleAnalytics` with `site.Config.Services.GoogleAnalytics.ID` in their own site config. That is a sixth **breaking** change, and it belongs in the proposal's breaking-change list with a changelog entry — not in a whitespace commit. Left undecided here deliberately.

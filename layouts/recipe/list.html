@@ -2,15 +2,8 @@
 
 <h1>{{ .Title }}</h1>
 {{ .Content }}
-{{ $pages := .Pages }}
-{{ range $pages.ByTitle }}
-  <h2 class="post-list {{ if ne .Params.show_summary false }}summary{{ end }}">
-    <a href="{{ .RelPermalink }}">
-      {{ .Title }}
-    </a>
-  </h2>
-{{ if ne .Params.show_summary false }}
-    {{ .Summary }}
-{{ end }}
-{{ end }}
+{{ $paginator := .Paginate .Pages.ByTitle }}
+{{ partial "page-list.html" (dict "pages" $paginator.Pages "sort" "title") }}
+{{ partial "pagination.html" . }}
+
 {{ end }}

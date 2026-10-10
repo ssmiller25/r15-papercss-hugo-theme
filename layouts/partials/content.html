@@ -1,0 +1,7 @@
+{{- /* Render page content, escaping the colon that goldmark emits in footnote
+       ids ("fn:1"), which html-validate's valid-id rule rejects and CSS cannot
+       select without escaping. Applied here so every content call site is
+       consistent and the change is visible in one place. */ -}}
+{{- $content := .Content | string -}}
+{{- $content = replaceRE `(fn(?:ref)?):` "$1-" $content -}}
+{{- $content | safeHTML -}}

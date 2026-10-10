@@ -2,19 +2,20 @@
 
 ## Purpose
 
-Defines the theme's relationship to the vendored PaperCSS framework: the constraints the theme must honor, the precedence of its override layer, and the defects the theme therefore owns outright.
+Defines the theme's relationship to the referenced PaperCSS framework — currently the published `v2.0.1` release of [`ssmiller25/papercss`](https://github.com/ssmiller25/papercss): how the release is pinned and integrity-checked, the precedence of the override layer, and the residue the theme owns where upstream does not fix a defect.
 
 ## ADDED Requirements
 
-### Requirement: The vendored framework version is recorded
+### Requirement: The referenced framework version is recorded and pinned by content
 
-The theme SHALL record which version of the framework stylesheet it vendors, and that record SHALL be verifiable against the vendored file.
+The theme SHALL reference a specific framework release rather than an unversioned address, and SHALL record the release version together with a content digest of the referenced stylesheet, so that the exact bytes applied to a page are identified and verifiable.
 
-#### Scenario: The vendored version is inspected
+#### Scenario: The referenced version is inspected
 
-- **WHEN** a maintainer determines which framework version the theme ships
-- **THEN** the version is stated in the repository
-- **AND** the stated version can be compared against the published artifact for that version
+- **WHEN** a maintainer determines which framework version the theme uses
+- **THEN** the version and the address used to obtain it are stated in the repository
+- **AND** a content digest pinning the served bytes accompanies them
+- **AND** the address names that specific version rather than a floating tag or latest
 
 ### Requirement: Override styles take precedence over framework styles
 
@@ -24,7 +25,7 @@ Consumer-facing and theme-owned presentation SHALL be applied through an overrid
 
 - **WHEN** the framework stylesheet declares a rule that the theme needs to behave differently
 - **THEN** the theme's override layer changes the effective value
-- **AND** the override requires no modification to the vendored file
+- **AND** the override requires no modification to the framework release
 
 #### Scenario: Cascade order is inspected
 
@@ -58,7 +59,7 @@ Styles applied through the override layer SHALL be delivered in a form that chan
 
 ### Requirement: Framework defects are adopted when the framework provides a fix
 
-Where a framework defect affects this theme's output and a fixed version of the framework is available, the theme SHALL adopt that version rather than carry a local correction for a defect the framework has fixed. The theme SHALL correct a defect locally only where the vendored framework version still contains it, and SHALL record why that version does not carry the fix.
+Where a framework defect affects this theme's output and a fixed version of the framework is available, the theme SHALL adopt that version rather than carry a local correction for a defect the framework has fixed. The theme SHALL correct a defect locally only where the referenced framework version still contains it, and SHALL record why that version does not carry the fix.
 
 #### Scenario: A framework defect affects the theme
 
@@ -71,15 +72,15 @@ Where a framework defect affects this theme's output and a fixed version of the 
 - **THEN** the theme adopts that version
 - **AND** the local correction for that defect is removed
 
-#### Scenario: The vendored version still contains the defect
+#### Scenario: The referenced version still contains the defect
 
 - **WHEN** no fixed framework version is available for the defect
 - **THEN** the theme corrects the behavior in its override layer
 - **AND** the correction is documented with its cause
 
-### Requirement: The vendored framework version is pinned to a release
+### Requirement: The referenced framework version is pinned to an immutable release
 
-The theme SHALL vendor a framework version that has been published as a release artifact, and SHALL NOT vendor an unreleased or locally built framework stylesheet, so that the vendored file's provenance stays verifiable.
+The theme SHALL reference a framework version that has been published as a release, and SHALL NOT reference an unreleased, mutable, or locally built framework stylesheet, so that the stylesheet's provenance stays verifiable.
 
 #### Scenario: A framework fix is available but unreleased
 
@@ -87,10 +88,48 @@ The theme SHALL vendor a framework version that has been published as a release 
 - **THEN** the theme does not adopt it
 - **AND** the theme waits for the published release
 
-#### Scenario: The vendored stylesheet is audited
+#### Scenario: The referenced stylesheet is audited
 
-- **WHEN** a maintainer compares the vendored stylesheet against the published artifact for the recorded version
-- **THEN** they are byte-identical
+- **WHEN** a maintainer compares the stylesheet the theme references against the published artifact for the recorded version
+- **THEN** the served bytes match the recorded content digest
+- **AND** the digest matches the artifact published with that release
+
+#### Scenario: The referenced release's provenance is inspected
+
+- **WHEN** a maintainer checks where the referenced stylesheet came from
+- **THEN** the release it came from is identified by tag and date
+- **AND** the reference is pinned to that immutable tag rather than a floating address
+
+### Requirement: A framework upgrade follows the framework's own change documentation
+
+When the theme adopts a new framework release, it SHALL take each breaking change the release documents and either make the corresponding substitution or record why it does not apply.
+
+#### Scenario: A release documents a breaking change
+
+- **WHEN** an adopted framework release documents a breaking change
+- **THEN** the theme applies the documented substitution or records that the change does not affect it
+- **AND** the response is visible in the theme's own changelog
+
+#### Scenario: A release changes documented markup
+
+- **WHEN** a release changes the markup it documents
+- **THEN** the theme's own markup is updated to match, because the framework styles by class rather than by the element type it documents
+
+### Requirement: Companion assets the stylesheet references resolve
+
+Where the referenced stylesheet loads companion files — a font, an image, any asset addressed relative to the stylesheet — those files SHALL resolve at the location the address implies from where the stylesheet is served, and a reference that does not resolve SHALL be treated as a defect rather than left to fail silently.
+
+#### Scenario: The stylesheet references a font file
+
+- **WHEN** the referenced stylesheet contains a declaration whose address is relative to the stylesheet
+- **THEN** the referenced file resolves at the address the stylesheet's own location implies
+- **AND** verification fails when a referenced file does not resolve, rather than the reference failing silently at runtime
+
+#### Scenario: The referenced asset set is audited
+
+- **WHEN** verification enumerates the companion files the referenced stylesheet declares
+- **THEN** every one of them resolves
+- **AND** the check is part of the theme's verification gate
 
 ### Requirement: Toggle controls remain keyboard reachable
 
@@ -134,7 +173,7 @@ Where the theme corrects a framework defect locally, the theme SHALL record an u
 
 - **WHEN** the theme corrects a defect originating in the framework
 - **THEN** an upstream report exists referencing the defect
-- **AND** the report identifies which vendored version is affected
+- **AND** the report identifies which referenced version is affected
 - **AND** local work does not wait on the upstream report being resolved
 
 ### Requirement: Framework markup keeps its presentation hooks
@@ -147,21 +186,21 @@ Where the theme corrects a framework defect by changing markup rather than style
 - **THEN** the framework's documented hooks remain present on the altered elements
 - **AND** the component renders with the framework's intended appearance
 
-### Requirement: Local modifications live only in the override layer
+### Requirement: The framework release is used unmodified
 
-A theme-local correction SHALL NOT be applied by editing the vendored stylesheet. The vendored file SHALL remain byte-identical to a published framework artifact.
+A theme-local correction SHALL NOT be applied by modifying the framework stylesheet. The theme SHALL consume the release as published — by reference, unmodified — and SHALL apply all local modifications in its override layer or in theme markup.
 
-#### Scenario: The vendored stylesheet is inspected
+#### Scenario: The framework is obtained
 
 - **WHEN** a maintainer inspects how the framework is obtained
-- **THEN** the vendored stylesheet is unmodified from its published version
-- **AND** all local modifications live in the override layer
+- **THEN** it is a reference to an unmodified published release
+- **AND** all local modifications live in the override layer or theme markup
 
 #### Scenario: A correction is needed
 
 - **WHEN** a correction to framework behavior is required
 - **THEN** it is applied in the override layer or in theme markup
-- **AND** the vendored file is not edited to carry it
+- **AND** the framework release is not modified to carry it
 
 ### Requirement: The theme tracks the framework it depends on
 

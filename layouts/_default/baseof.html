@@ -2,12 +2,16 @@
 <html lang="{{ .Site.Language.Lang }}">
   {{ partial "head.html" . }}
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="container paper">
-      {{ partial "nav.html" . }}
+      <header class="site-header">
+        {{ partial "nav.html" . }}
+      </header>
       {{ partial "searchbox.html" . }}
-      <main>
+      <main id="main-content">
 {{ block "main" . }}{{ end }}
       </main>
+      {{ partial "footer.html" . }}
     </div>
 {{ if site.Params.enable_search }}
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>

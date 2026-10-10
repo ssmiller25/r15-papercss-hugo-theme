@@ -1,3 +1,10 @@
-<div class="text-{{ .Get 0 }}">
+{{- $type := .Get "type" -}}
+{{- $allowed := slice "primary" "secondary" "success" "warning" "danger" "muted" -}}
+{{- if not $type -}}
+  {{- errorf "shortcode %q: missing required parameter 'type' at %s; accepted values: %s" .Name .Position (delimit $allowed ", ") -}}
+{{- else if not (in $allowed $type) -}}
+  {{- errorf "shortcode %q: invalid 'type' %q at %s; accepted values: %s" .Name $type .Position (delimit $allowed ", ") -}}
+{{- end -}}
+<div class="text-{{ $type }}">
   {{ .Inner | markdownify }}
 </div>

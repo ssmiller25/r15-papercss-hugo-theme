@@ -1,6 +1,46 @@
+/*
+ * PaperCSS override layer.
+ *
+ * The framework is vendored unchanged (see papercss.lock.json for the version
+ * and checksums). Everything theme-owned lives here and loads after it.
+ *
+ * Known upstream defect that this release (v2.0.1) does not fix: in dark mode
+ * `--primary-text` is set equal to `--main-background`, so text resolved from
+ * it is invisible on a dark ground. The theme does not use dark mode yet; when
+ * it does, the correction and an upstream report are carried by the
+ * `add-dark-mode-toggle` change and recorded in the README.
+ */
+
 /* base */
 body {
   background-image: url('{{ "img/geometry2.png" | relURL }}');
+}
+
+/* skip link: first focusable element, hidden until focused */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  left: 0;
+  padding: 0.5em 1em;
+  background-color: #fff;
+  color: #41403e;
+}
+
+/* visually hidden, but available to assistive technology */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* anchors */
@@ -11,23 +51,12 @@ a:visited {
   text-decoration: underline;
 }
 
-/*
- * The nav override has to out-specify both `a` and `a:visited`, so its
- * specificity range (0,0,2)-(0,1,2) straddles the anchor rule's (0,0,1)-(0,1,1).
- * No source order satisfies `no-descending-specificity` for an interleaved pair
- * like this, and the order is irrelevant anyway: every nav selector wins on
- * specificity alone.
- */
-/* stylelint-disable no-descending-specificity -- see above */
-
 /* navbar */
-nav a,
+nav a:link,
 nav a:visited {
   color: #41403e;
   text-decoration: none;
 }
-
-/* stylelint-enable no-descending-specificity */
 
 /* blockquote */
 blockquote {
@@ -56,4 +85,137 @@ blockquote {
 
 .toc h2 {
   font-size: 1.3em;
+}
+
+/* search */
+#search-container {
+  margin: 1em 0;
+}
+
+#search-box {
+  width: 100%;
+  padding: 0.5em;
+}
+
+#search-results {
+  margin-top: 1em;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+/* commit listing (homepage) */
+.commit-entry {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.commit-heading {
+  margin-bottom: 0.5rem;
+}
+
+.commit-heading a:link,
+.commit-heading a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+.commit-meta {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.commit-hash {
+  padding: 2px 6px;
+  font-family: monospace;
+  background-color: #f4f4f4;
+  border-radius: 3px;
+}
+
+.commit-date,
+.commit-author {
+  margin-left: 1rem;
+}
+
+.commit-body {
+  margin: 1rem 0;
+}
+
+.commit-files {
+  margin-top: 1rem;
+}
+
+.commit-files-list {
+  margin-top: 0.5rem;
+  padding-left: 0;
+  list-style: none;
+}
+
+.commit-files-list li {
+  margin-bottom: 0.3rem;
+}
+
+.commit-file-status {
+  margin-right: 0.5rem;
+}
+
+.commit-file-link {
+  text-decoration: none;
+}
+
+.commit-file-label {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.commit-pagination {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.commit-page-btn {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.commit-page-info {
+  margin: 0 1rem;
+}
+
+/* footer */
+.site-footer {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--muted-light, #e6e7e9);
+  text-align: center;
+  color: var(--muted, #868e96);
+}
+
+.site-footer p {
+  margin: 0.25rem 0;
+}
+
+.site-footer-copyright {
+  font-size: 0.9rem;
+}
+
+.site-footer-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary, #41403e);
+}
+
+.site-footer-meta {
+  font-size: 0.85rem;
+}
+
+/* utility */
+.is-hidden {
+  display: none;
 }

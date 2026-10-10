@@ -1,0 +1,7 @@
+<footer class="site-footer">
+{{ with .Site.Copyright }}
+  <p class="site-footer-copyright">{{ . | markdownify }}</p>
+{{ end }}
+  <p class="site-footer-title">{{ .Site.Title }}</p>
+  <p class="site-footer-meta">Built with <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/ssmiller25/papercss">PaperCSS</a>.</p>
+</footer>

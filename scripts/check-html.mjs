@@ -55,9 +55,48 @@ const ALIAS_REFRESH = /<meta\b[^>]*http-equiv\s*=\s*["']?refresh/i;
 
 const update = process.argv.slice(2).includes("--update");
 
+// Rules whose remaining violations are not authored by the theme. They come
+// from Hugo's internal templates or from the example site's own markdown, so
+// they cannot reach zero without editing files the theme does not own. Every
+// rule NOT listed here is theme-owned and must reach zero: the recorded
+// baseline is a ceiling, but a theme-owned rule must not be used as one.
+const EXTERNAL_RULES = {
+  "no-trailing-whitespace": "Hugo's internal google_analytics template and example-site content",
+  "no-inline-style": "inline styles authored in example-site content",
+};
+
 function fail(message) {
   console.error(`error: ${message}`);
   process.exit(2);
+}
+
+// Walk a directory tree and return every file whose name satisfies `match`.
+// Used to find empty templates independently of the generated-HTML gate.
+function findFiles(dir, match, found = []) {
+  let entries;
+  try {
+    entries = readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return found;
+  }
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      findFiles(full, match, found);
+    } else if (entry.isFile() && match(entry.name)) {
+      found.push(full);
+    }
+  }
+  return found;
+}
+
+// An empty template is a build failure: Hugo renders nothing for it, so a
+// zero-byte 404.html silently returns an empty page rather than erroring.
+// This runs before the HTML gate because it is independent of the build.
+const emptyTemplates = findFiles(path.join(ROOT, "layouts"), (name) => name.endsWith(".html"))
+  .filter((file) => readFileSync(file).length === 0);
+if (emptyTemplates.length > 0) {
+  fail(`empty template files are a build failure:\n  ${emptyTemplates.map((file) => path.relative(ROOT, file)).join("\n  ")}`);
 }
 
 function collectHtml(dir, found = []) {
@@ -88,6 +127,22 @@ const aliases = generated.length - pages.length;
 
 if (pages.length === 0) {
   fail("no theme-rendered pages found - the alias filter may be matching too broadly");
+}
+
+// Every generated page must declare its language and a canonical address.
+// html-validate 11.x has no rule for either, so they are asserted here.
+const LANG_RE = /<html\b[^>]*\blang\s*=\s*["'][^"']+["']/i;
+const CANONICAL_RE = /<link\b[^>]*\brel\s*=\s*["']canonical["'][^>]*\bhref\s*=\s*["'][^"']+["']/i;
+const missingMeta = pages.filter((file) => {
+  const html = readFileSync(file, "utf8");
+  return !LANG_RE.test(html) || !CANONICAL_RE.test(html);
+});
+if (missingMeta.length > 0) {
+  fail(
+    `pages missing a language declaration or canonical address:\n  ${missingMeta
+      .map((file) => path.relative(ROOT, file))
+      .join("\n  ")}`
+  );
 }
 
 // `html-validate` exits non-zero whenever it reports anything, so a non-zero
@@ -168,12 +223,18 @@ for (const rule of new Set([...Object.keys(byRule), ...Object.keys(baseline.byRu
   }
 }
 
+// Theme-owned rules must reach zero. A rule in EXTERNAL_RULES carries a
+// documented, non-zero floor because its remaining violations belong to Hugo's
+// internal templates or to example-site content, not to the theme.
+const themeOwned = Object.entries(byRule).filter(([rule, count]) => count > 0 && !(rule in EXTERNAL_RULES));
+
 console.log(`html-validate: ${total} errors across ${pages.length} pages (${aliases} alias stubs excluded)`);
 for (const rule of Object.keys(byRule).sort((a, b) => byRule[b] - byRule[a] || a.localeCompare(b))) {
   const count = byRule[rule];
   const allowed = baseline.byRule[rule] ?? 0;
   const mark = count > allowed ? "REGRESSION" : count < allowed ? "improved  " : "at baseline";
-  console.log(`  ${mark}  ${rule}: ${count} (baseline ${allowed})`);
+  const external = rule in EXTERNAL_RULES ? "  [external: not theme-authored]" : "";
+  console.log(`  ${mark}  ${rule}: ${count} (baseline ${allowed})${external}`);
 }
 for (const rule of Object.keys(baseline.byRule).sort()) {
   if (!(rule in byRule)) {
@@ -181,8 +242,17 @@ for (const rule of Object.keys(baseline.byRule).sort()) {
   }
 }
 
-if (regressions.length > 0) {
-  console.error(`\nHTML error budget exceeded:\n  ${regressions.join("\n  ")}`);
+if (regressions.length > 0 || themeOwned.length > 0) {
+  if (regressions.length > 0) {
+    console.error(`\nHTML error budget exceeded:\n  ${regressions.join("\n  ")}`);
+  }
+  if (themeOwned.length > 0) {
+    console.error(
+      `\nTheme-owned rules must reach zero:\n  ${themeOwned
+        .map(([rule, count]) => `${rule}: ${count}`)
+        .join("\n  ")}\nOnly rules in EXTERNAL_RULES may carry a non-zero floor.`
+    );
+  }
   console.error("\nFix these, or run `node scripts/check-html.mjs --update` if the baseline itself is wrong.");
   process.exit(1);
 }

@@ -7,6 +7,16 @@ help:           ## Show this help.
 run-example:  ## Run the example site. 
 	@(cd exampleSite; hugo serve --themesDir ../..; cd ..)
 
+.PHONY: generate-commits
+generate-commits:   ## Generate data/commits.json for the commits homepage (see README)
+	@python3 scripts/generate-commits-data.py
+
+.PHONY: papercss-pin
+papercss-pin:   ## Pin the theme to a PaperCSS release: make papercss-pin TAG=v2.0.2 (rewrites papercss.lock.json, head.html, README, then verifies)
+	@test -n "$(TAG)" || (echo "Usage: make papercss-pin TAG=v2.0.2"; exit 1)
+	@node scripts/pin-papercss.mjs "$(TAG)"
+	@node scripts/check-papercss.mjs
+
 .PHONY: build-example
 build-example:   ## Build the example site
 	@# --cleanDestinationDir matters for correctness, not tidiness: Hugo leaves
@@ -16,9 +26,12 @@ build-example:   ## Build the example site
 	@(cd exampleSite; hugo --cleanDestinationDir --themesDir ../..; cd ..)
 
 .PHONY: check
-check:   ## Run the full verification gate - build the example site, validate the generated HTML against the committed error baseline, then lint the theme's stylesheet (same sequence as CI)
+check:   ## Run the full verification gate - build the example site, validate the generated HTML against the committed error baseline, confirm the build is deterministic, verify the pinned PaperCSS reference and the declared Hugo floor, then lint the theme's stylesheet (same sequence as CI)
 	@$(MAKE) build-example
 	@node scripts/check-html.mjs
+	@node scripts/check-determinism.mjs
+	@node scripts/check-papercss.mjs
+	@node scripts/check-hugo-version.mjs
 	@# stylelint resolves a shareable `extends` against the config file, the
 	@# working directory, and finally a directory it infers from the node
 	@# binary. The linters are installed globally and that inference does not
