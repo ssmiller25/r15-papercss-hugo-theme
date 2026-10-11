@@ -1,11 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.0.0
 
 ### Breaking changes
 
 These change the markup the theme renders. Consumers who override the affected
-hooks must adjust their CSS.
+hooks must adjust their CSS; see [UPGRADE.md](UPGRADE.md) for the before/after of
+each and the substitution to make.
 
 - **Document landmarks and a footer were added.** `baseof.html` now emits a
   `<header>`, an identifiable `<main id="main-content">`, and a `<footer>`, with
@@ -59,19 +60,6 @@ vendored. The framework's own
 [`UPGRADE.md`](https://github.com/ssmiller25/papercss/blob/main/UPGRADE.md)
 is the canonical before/after for each framework change; the theme-specific
 consequences are:
-
-- The four defects the theme previously worked around are fixed at the source,
-  so the theme no longer carries overrides for them: the collapsible toggle is
-  visually hidden but focusable, the `960px` height cap is gone, `padding: none`
-  is corrected, and the documented toggle markup uses `<span class="barN">`.
-- The framework's fonts (Neucha and Patrick Hand SC) are self-hosted by the
-  referenced stylesheet, so the theme's typography is unchanged and the page
-  makes no separate font request. If you added the Google Fonts `<link>` that
-  the `2.0.0` `UPGRADE.md` suggested, remove it — the fonts now load
-  automatically and the link loads them twice.
-- The referenced release and its integrity digest are recorded in
-  `papercss.lock.json`, and `make check` verifies that `head.html` is pinned to
-  them (and, when online, that the bytes still match and the fonts resolve).
 
 ### Hugo version floor
 

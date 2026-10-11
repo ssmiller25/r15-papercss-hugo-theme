@@ -3,6 +3,7 @@
 A Hugo theme made with PaperCSS, the less formal CSS framework.
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ssmiller25/r15-papercss-hugo-theme)
+[![Release](https://img.shields.io/github/v/release/ssmiller25/r15-papercss-hugo-theme)](https://github.com/ssmiller25/r15-papercss-hugo-theme/releases/latest)
 
 Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://github.com/zwbetz-gh/papercss-hugo-theme).  Mostly for persoanl use with my blog and other sub-sites, but completely usable to anyone else you might find it useful.
 
@@ -37,19 +38,61 @@ Hugo version `0.131.0` or higher is required. View the [Hugo releases](https://g
 
 ## Installation
 
+There are two ways to use the theme. Both pin an exact version — do not track a
+branch, because the theme's markup changes between releases and
+[`UPGRADE.md`](UPGRADE.md) records what a consumer must adjust.
+
+### As a Hugo Module (requires Go)
+
 From the root of your site:
 
 ```
-git submodule add https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
+hugo mod init github.com/you/your-site
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.0.0
 ```
+
+Then import it from your site configuration:
+
+```toml
+[module]
+  [[module.imports]]
+    path = 'github.com/ssmiller25/r15-papercss-hugo-theme'
+```
+
+The resolved version is recorded in your `go.mod` and `go.sum`, so a build is
+reproducible; commit both.
+
+### As a git submodule (no Go toolchain required)
+
+From the root of your site:
+
+```
+git submodule add -b v1.0.0 https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
+```
+
+The `-b v1.0.0` pins the submodule to the release tag rather than the default
+branch.
 
 ## Updating
 
-From the root of your site:
+Move the pin to the release you want — read `CHANGELOG.md` and `UPGRADE.md`
+first.
+
+Hugo Module:
 
 ```
-git submodule update --remote --merge
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.0.0
 ```
+
+git submodule:
+
+```
+git -C themes/r15-papercss-hugo-theme fetch --tags
+git -C themes/r15-papercss-hugo-theme checkout v1.0.0
+git add themes/r15-papercss-hugo-theme
+```
+
+Replace `v1.0.0` with the target release.
 
 ## Run example site
 

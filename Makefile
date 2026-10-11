@@ -17,6 +17,15 @@ papercss-pin:   ## Pin the theme to a PaperCSS release: make papercss-pin TAG=v2
 	@node scripts/pin-papercss.mjs "$(TAG)"
 	@node scripts/check-papercss.mjs
 
+.PHONY: release
+release:   ## Cut a release: make release TAG=v1.0.0 (verifies the version, then creates an SSH-signed tag and prints the push command)
+	@test -n "$(TAG)" || (echo "Usage: make release TAG=v1.0.0"; exit 1)
+	@echo "$(TAG)" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$$' || (echo "TAG must look like vX.Y.Z"; exit 1)
+	@node scripts/check-release.mjs --tag "$(TAG)"
+	@git tag -s "$(TAG)" -m "$(TAG)"
+	@echo "Created SSH-signed tag $(TAG). Push it to trigger the release workflow:"
+	@echo "  git push origin $(TAG)"
+
 .PHONY: build-example
 build-example:   ## Build the example site
 	@# --cleanDestinationDir matters for correctness, not tidiness: Hugo leaves
@@ -32,6 +41,8 @@ check:   ## Run the full verification gate - build the example site, validate th
 	@node scripts/check-determinism.mjs
 	@node scripts/check-papercss.mjs
 	@node scripts/check-hugo-version.mjs
+	@node scripts/check-release.mjs
+	@node scripts/check-distribution.mjs
 	@# stylelint resolves a shareable `extends` against the config file, the
 	@# working directory, and finally a directory it infers from the node
 	@# binary. The linters are installed globally and that inference does not

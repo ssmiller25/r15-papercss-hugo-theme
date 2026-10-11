@@ -1,8 +1,9 @@
-name = "PaperCSS"
+name = "r15 PaperCSS"
 license = "MIT"
 licenselink = "https://github.com/ssmiller25/r15-papercss-hugo-theme/blob/main/LICENSE"
 description = "A Hugo theme made with PaperCSS, the less formal CSS framework."
 homepage = "https://github.com/ssmiller25/r15-papercss-hugo-theme"
+demosite = "https://r15-papercss-hugo.r15cookie.com"
 tags = ["blog", "paper", "informal"]
 features = ["blog", "toc", "shortcodes"]
 min_version = "0.131.0"
