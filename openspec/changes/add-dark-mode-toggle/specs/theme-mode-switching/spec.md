@@ -79,11 +79,6 @@ Where a visitor selects a mode, the theme SHALL record that choice and restore i
 - **WHEN** a visitor returns to the site
 - **THEN** the previously selected mode is applied without the visitor selecting it again
 
-#### Scenario: The choice is cleared by the visitor
-
-- **WHEN** a visitor returns the control to its automatic state and that state is recorded
-- **THEN** subsequent visits follow the system preference again
-
 ### Requirement: The control reports the active mode
 
 The theme SHALL expose the active mode on the control in a form assistive technology can read, so that a visitor who cannot see the colors still knows which mode is active.

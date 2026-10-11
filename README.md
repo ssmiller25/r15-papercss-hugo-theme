@@ -17,6 +17,7 @@ Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://gi
   - [Updating](#updating)
   - [Run example site](#run-example-site)
   - [Configuration](#configuration)
+  - [Color mode](#color-mode)
   - [PaperCSS](#papercss)
   - [Development and verification](#development-and-verification)
   - [Git commits homepage](#git-commits-homepage)
@@ -48,7 +49,7 @@ From the root of your site:
 
 ```
 hugo mod init github.com/you/your-site
-hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.0.0
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.1.0
 ```
 
 Then import it from your site configuration:
@@ -67,10 +68,10 @@ reproducible; commit both.
 From the root of your site:
 
 ```
-git submodule add -b v1.0.0 https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
+git submodule add -b v1.1.0 https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
 ```
 
-The `-b v1.0.0` pins the submodule to the release tag rather than the default
+The `-b v1.1.0` pins the submodule to the release tag rather than the default
 branch.
 
 ## Updating
@@ -81,18 +82,18 @@ first.
 Hugo Module:
 
 ```
-hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.0.0
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.1.0
 ```
 
 git submodule:
 
 ```
 git -C themes/r15-papercss-hugo-theme fetch --tags
-git -C themes/r15-papercss-hugo-theme checkout v1.0.0
+git -C themes/r15-papercss-hugo-theme checkout v1.1.0
 git add themes/r15-papercss-hugo-theme
 ```
 
-Replace `v1.0.0` with the target release.
+Replace `v1.1.0` with the target release.
 
 ## Run example site
 
@@ -106,14 +107,44 @@ hugo server --themesDir ../..
 
 Copy `config.yaml` from the [`exampleSite`](https://github.com/ssmiller25/r15-papercss-hugo-theme/blob/main/exampleSite/config.yaml), then edit as desired. 
 
+## Color mode
+
+Set `params.enableDarkMode` to add a Paper/Ink color-mode switch to the
+navigation. It is **off by default**, so a site that does not set it renders
+exactly as before.
+
+```yaml
+params:
+  enableDarkMode: true
+```
+
+With no stored choice the site follows the operating system's
+`prefers-color-scheme`, and keeps following it when the system setting changes.
+Once a visitor picks Paper or Ink, that choice is remembered in `localStorage`
+and used on later visits. The mode is applied before first paint, so the page
+never flashes the wrong ground, and the browser chrome color follows it.
+
+There is no "automatic" button: to return to following the system after an
+explicit choice, clear the site's stored data.
+
+The control sits at the right of the navigation bar as two small options stacked
+vertically, with the active one filled in. They are labelled **Paper** (light)
+and **Ink** (dark) by default. Override either in your site configuration:
+
+```yaml
+params:
+  lightModeLabel: Light
+  darkModeLabel: Dark
+```
+
 ## PaperCSS
 
 This theme references PaperCSS from the maintained copy at
 [`ssmiller25/papercss`](https://github.com/ssmiller25/papercss), pinned to the
-immutable release **`v2.0.1`** and loaded from jsDelivr:
+immutable release **`v2.0.2`** and loaded from jsDelivr:
 
 ```
-https://cdn.jsdelivr.net/gh/ssmiller25/papercss@v2.0.1/dist/paper.min.css
+https://cdn.jsdelivr.net/gh/ssmiller25/papercss@v2.0.2/dist/paper.min.css
 ```
 
 The pin is recorded in `papercss.lock.json` together with a subresource-integrity
@@ -130,11 +161,23 @@ and fingerprinted, and is served with a subresource-integrity digest. The
 framework's own fonts (Neucha and Patrick Hand SC) are self-hosted by the
 referenced stylesheet, so the page makes no separate font request.
 
-One defect in the referenced release is known to remain, and is not triggered by
-the theme today: in dark mode `--primary-text` equals `--main-background`, so
-text resolved from it is invisible on a dark ground. The `add-dark-mode-toggle`
-change carries the local correction and an upstream report; dark mode is not yet
-part of this theme.
+### Dark-mode corrections
+
+The dark palette is PaperCSS's own, corrected in `assets/css/custom.css` where
+two reachable defects would otherwise make text illegible; both are reported
+upstream:
+
+- `.alert-muted` resolved its text and its surface to the same dark value
+  (`--muted-text` equals `--muted-light`), hiding the text. The theme
+  re-declares `--muted-text` under `html.dark`.
+- `.background-{type}` set a light surface but left the text inherited (white in
+  dark), so `.background-primary` was white on white. The theme gives each type
+  the matching `--{type}-text` color under `html.dark`.
+
+Values that stay low-contrast but legible — the non-primary `.alert-*` and
+`.background-*` variants, `.text-secondary`, `.text-danger`, `.text-muted`, and
+`.badge` — are left as PaperCSS publishes them rather than restyled. The result
+is "PaperCSS's dark mode, corrected", not a purpose-designed dark theme.
 
 ## Development and verification
 

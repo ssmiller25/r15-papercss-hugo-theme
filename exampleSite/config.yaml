@@ -28,6 +28,10 @@ params:
   dateFormat: Jan 2, 2006
   navTitleLink: /
   enable_search: true  # Enable search functionality
+  enableDarkMode: true  # Enable the Paper/Ink color-mode switch (off by default; defaults to the system preference)
+  # Labels for the color-mode switch. Defaults: Paper (light), Ink (dark).
+  lightModeLabel: Paper
+  darkModeLabel: Ink
   github_repo: "owner/repo"  # Used for commit links when the homepage shows git commits (see data/commits.json)
 
 menu:

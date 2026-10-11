@@ -27,7 +27,39 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="theme-color" content="#ffffff">
 
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/ssmiller25/papercss@v2.0.1/dist/paper.min.css" integrity="sha384-X6OIslUE2lkIrtz1qoMMAFZrjXkE+wjL6x+tSbtQa31zv1YQ2CBp4gSSTJ/dd6LS" crossorigin="anonymous">
+{{ if site.Params.enableDarkMode }}
+  <script>
+    // Apply the saved (or system) color mode before first paint so the page
+    // never flashes the wrong ground. Runs before the stylesheets are parsed.
+    (function () {
+      var KEY = "r15-papercss-hugo-theme:color-mode";
+      var mode = "auto";
+      try {
+        var stored = window.localStorage.getItem(KEY);
+        if (stored === "light" || stored === "dark" || stored === "auto") {
+          mode = stored;
+        }
+      } catch (e) { /* storage unavailable: fall through to auto */ }
+      var prefersDark = false;
+      try {
+        prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      } catch (e) { /* matchMedia unavailable: treat as light */ }
+      var resolved = mode === "auto" ? (prefersDark ? "dark" : "light") : mode;
+      var root = document.documentElement;
+      if (resolved === "dark") {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) {
+        meta.setAttribute("content", resolved === "dark" ? "#41403e" : "#ffffff");
+      }
+    })();
+  </script>
+{{ end }}
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/ssmiller25/papercss@v2.0.2/dist/paper.min.css" integrity="sha384-X6OIslUE2lkIrtz1qoMMAFZrjXkE+wjL6x+tSbtQa31zv1YQ2CBp4gSSTJ/dd6LS" crossorigin="anonymous">
 
 {{ $customCssPath := "css/custom.css" }}
 {{ $customCss := resources.Get $customCssPath | resources.ExecuteAsTemplate $customCssPath . | minify | fingerprint }}

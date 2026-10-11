@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.1.0
+
+### Added
+
+- **A Paper/Ink color-mode switch**, gated behind the new `enableDarkMode`
+  site parameter (off by default). When enabled, two small options stacked
+  vertically appear at the right of the navigation bar. With no stored choice
+  the site follows the operating system's `prefers-color-scheme`; once a visitor
+  chooses, that choice is remembered across visits. The options are labelled
+  "Paper" (light) and "Ink" (dark) by default, overridable with
+  `lightModeLabel` and `darkModeLabel`. The resolved mode is
+  applied before first paint, so the page never flashes the wrong ground. The
+  dark palette is PaperCSS's own; the theme corrects two reachable upstream
+  defects and leaves the rest as published — see the README.
+
+### Changed
+
+- **The referenced PaperCSS release moves from `v2.0.1` to `v2.0.2`.** The two
+  releases ship a byte-identical stylesheet and the pin's subresource-integrity
+  digest is unchanged, so this is a provenance-only change with no rendered
+  effect. `v2.0.2` is a development-dependency hardening patch; no documented
+  breaking change applies to the theme.
+
 ## 1.0.0
 
 ### Breaking changes

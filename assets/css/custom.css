@@ -1,19 +1,61 @@
 /*
  * PaperCSS override layer.
  *
- * The framework is vendored unchanged (see papercss.lock.json for the version
- * and checksums). Everything theme-owned lives here and loads after it.
+ * The framework is referenced unchanged from jsDelivr and pinned by tag and
+ * subresource-integrity digest (see papercss.lock.json for the version and
+ * checksum). Everything theme-owned lives here and loads after it.
  *
- * Known upstream defect that this release (v2.0.1) does not fix: in dark mode
- * `--primary-text` is set equal to `--main-background`, so text resolved from
- * it is invisible on a dark ground. The theme does not use dark mode yet; when
- * it does, the correction and an upstream report are carried by the
- * `add-dark-mode-toggle` change and recorded in the README.
+ * Known upstream defects the pinned release (v2.0.2) does not fix, corrected
+ * in this layer:
+ *   - `.alert-muted` resolves its text and its surface to the same dark value
+ *     (`--muted-text` == `--muted-light` == #949ba2), so the text is invisible.
+ *     Corrected by re-declaring `--muted-text` under `html.dark`.
+ *   - `.background-{type}` sets a light surface but leaves the text inherited
+ *     (white in dark), so `.background-primary` is white on white. Corrected by
+ *     setting the text color per type under `html.dark`.
+ * `--primary-text` is NOT one of them: it is only used on `--primary-light`
+ * surfaces, which are near-white in dark, so it stays legible, and changing it
+ * would regress `.alert-primary`. An upstream report carries both defects; the
+ * README records the corrections and the low-contrast values left as-is.
  */
+
+/*
+ * Theme-owned palette. Light values are the exact colors this stylesheet used
+ * before dark mode existed, so light-mode rendering is unchanged; dark values
+ * come from the framework's own `html.dark` palette where one matches.
+ */
+:root {
+  --theme-link-color: rgb(0 0 238);
+  --theme-commit-border: #ddd;
+  --theme-commit-divider: #eee;
+  --theme-commit-meta: #666;
+  --theme-commit-chip-bg: #f4f4f4;
+  --theme-commit-chip-text: #999;
+  --theme-commit-surface: #fff;
+}
+
+html.dark {
+  --theme-link-color: var(--secondary-light-10);
+  --theme-commit-border: var(--muted);
+  --theme-commit-divider: var(--muted);
+  --theme-commit-meta: var(--muted-light);
+  --theme-commit-chip-bg: var(--white-dark);
+  --theme-commit-chip-text: var(--muted-light);
+  --theme-commit-surface: var(--white-dark);
+
+  /* upstream defect: --muted-text equals --muted-light (#949ba2), so
+     `.alert-muted` text is invisible on its surface; restore contrast. */
+  --muted-text: var(--muted-dark);
+}
 
 /* base */
 body {
   background-image: url('{{ "img/geometry2.png" | relURL }}');
+}
+
+/* the light speckle texture reads as a bright halo behind a dark page */
+html.dark body {
+  background-image: none;
 }
 
 /* skip link: first focusable element, hidden until focused */
@@ -26,8 +68,8 @@ body {
 .skip-link:focus {
   left: 0;
   padding: 0.5em 1em;
-  background-color: #fff;
-  color: #41403e;
+  background-color: var(--main-background);
+  color: var(--primary);
 }
 
 /* visually hidden, but available to assistive technology */
@@ -46,7 +88,7 @@ body {
 /* anchors */
 a,
 a:visited {
-  color: rgb(0 0 238);
+  color: var(--theme-link-color);
   background-image: none;
   text-decoration: underline;
 }
@@ -54,7 +96,7 @@ a:visited {
 /* navbar */
 nav a:link,
 nav a:visited {
-  color: #41403e;
+  color: var(--primary);
   text-decoration: none;
 }
 
@@ -70,6 +112,12 @@ blockquote {
 
 .summary {
   margin-bottom: 0.1em; 
+}
+
+/* the framework draws a "-" before every list item; a listing item starts with
+   a block heading, which strands that marker on its own line */
+.post-list-items li::before {
+  content: none;
 }
 
 /* post single */
@@ -107,7 +155,7 @@ blockquote {
 .commit-entry {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--theme-commit-divider);
 }
 
 .commit-heading {
@@ -123,13 +171,13 @@ blockquote {
 .commit-meta {
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--theme-commit-meta);
 }
 
 .commit-hash {
   padding: 2px 6px;
   font-family: monospace;
-  background-color: #f4f4f4;
+  background-color: var(--theme-commit-chip-bg);
   border-radius: 3px;
 }
 
@@ -167,7 +215,7 @@ blockquote {
 .commit-file-label {
   margin-left: 0.5rem;
   font-size: 0.85rem;
-  color: #999;
+  color: var(--theme-commit-chip-text);
 }
 
 .commit-pagination {
@@ -179,8 +227,8 @@ blockquote {
   margin: 0 0.5rem;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: var(--theme-commit-surface);
+  border: 1px solid var(--theme-commit-border);
   border-radius: 3px;
 }
 
@@ -213,6 +261,68 @@ blockquote {
 
 .site-footer-meta {
   font-size: 0.85rem;
+}
+
+/* keep the main menu right-aligned, immediately left of the mode switch */
+@media only screen and (width >= 769px) {
+  .split-nav .collapsible {
+    width: auto;
+    margin-left: auto;
+  }
+}
+
+/* color-mode switch: two small options, stacked, at the right of the bar */
+.theme-mode-switch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  align-self: center;
+  margin-left: 0.75rem;
+}
+
+.theme-mode-switch button {
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  border-radius: 4px;
+  box-shadow: none;
+  background-image: none;
+}
+
+.theme-mode-switch button[aria-pressed="true"] {
+  color: var(--main-background);
+  background-color: var(--primary);
+}
+
+.theme-mode-switch button:focus-visible {
+  outline: 2px dashed var(--primary);
+  outline-offset: 2px;
+}
+
+/* upstream defect: .background-{type} sets a light surface but leaves the text
+   inherited (white in dark), so give each its matching text color. */
+html.dark .background-primary {
+  color: var(--primary-text);
+}
+
+html.dark .background-secondary {
+  color: var(--secondary-text);
+}
+
+html.dark .background-success {
+  color: var(--success-text);
+}
+
+html.dark .background-warning {
+  color: var(--warning-text);
+}
+
+html.dark .background-danger {
+  color: var(--danger-text);
+}
+
+html.dark .background-muted {
+  color: var(--muted-text);
 }
 
 /* utility */

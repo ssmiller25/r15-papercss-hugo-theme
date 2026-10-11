@@ -17,5 +17,8 @@
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
   <script src="/js/search.js"></script>
 {{ end }}
+{{ if site.Params.enableDarkMode }}
+  <script src="{{ "js/theme.js" | relURL }}"></script>
+{{ end }}
   </body>
 </html>

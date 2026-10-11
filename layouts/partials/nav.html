@@ -18,4 +18,10 @@
       </ul>
     </div>
   </div>
+{{ if site.Params.enableDarkMode }}
+  <div class="theme-mode-switch" role="group" aria-label="Color mode">
+    <button type="button" data-mode="light" aria-pressed="false">{{ site.Params.lightModeLabel | default "Paper" }}</button>
+    <button type="button" data-mode="dark" aria-pressed="false">{{ site.Params.darkModeLabel | default "Ink" }}</button>
+  </div>
+{{ end }}
 </nav>
