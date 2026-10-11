@@ -1,8 +1,8 @@
-{{ $pag := $.Paginator }}
+{{- $pag := $.Paginator -}}
 {{ if gt $pag.TotalPages 1 -}}
 
   <div class="row flex-center margin-top-large">
- 
+
   {{ with $pag.First -}}
     <a href="{{ .URL }}" class="paper-btn">&laquo;&laquo;</a>
   {{ end -}}
@@ -27,7 +27,7 @@
 
   {{- else if $shouldEllipse }}
 
-    <button>&nbsp;&hellip;&nbsp;</button>
+    <span class="paper-btn disabled" aria-hidden="true">&hellip;</span>
 
   {{- end -}}
   {{- end }}

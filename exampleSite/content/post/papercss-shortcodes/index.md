@@ -8,20 +8,20 @@ show_summary: false
 ## collapsible
 
 ```
-{{</* collapsible "First" */>}}
+{{</* collapsible summary="First" */>}}
 Bacon ipsum dolor sit amet beef venison beef ribs kielbasa.
 {{</* /collapsible */>}}
 
-{{</* collapsible "Second" */>}}
+{{</* collapsible summary="Second" */>}}
 Bacon ipsum dolor sit amet landjaeger sausage brisket.
 {{</* /collapsible */>}}
 ```
 
-{{< collapsible "First" >}}
+{{< collapsible summary="First" >}}
 Bacon ipsum dolor sit amet beef venison beef ribs kielbasa.
 {{< /collapsible >}}
 
-{{< collapsible "Second" >}}
+{{< collapsible summary="Second" >}}
 Bacon ipsum dolor sit amet landjaeger sausage brisket.
 {{< /collapsible >}}
 
@@ -32,19 +32,19 @@ Bacon ipsum dolor sit amet landjaeger sausage brisket.
 Regular
 {{</* /border */>}}
 
-{{</* border "dashed" */>}}
+{{</* border style="dashed" */>}}
 Dashed
 {{</* /border */>}}
 
-{{</* border "dotted" */>}}
+{{</* border style="dotted" */>}}
 Dotted
 {{</* /border */>}}
 
-{{</* border "dashed thick" */>}}
+{{</* border style="dashed thick" */>}}
 Dashed Thick
 {{</* /border */>}}
 
-{{</* border "dotted thick" */>}}
+{{</* border style="dotted thick" */>}}
 Dotted Thick
 {{</* /border */>}}
 ```
@@ -53,159 +53,159 @@ Dotted Thick
 Regular
 {{< /border >}}
 
-{{< border "dashed" >}}
+{{< border style="dashed" >}}
 Dashed
 {{< /border >}}
 
-{{< border "dotted" >}}
+{{< border style="dotted" >}}
 Dotted
 {{< /border >}}
 
-{{< border "dashed thick" >}}
+{{< border style="dashed thick" >}}
 Dashed Thick
 {{< /border >}}
 
-{{< border "dotted thick" >}}
+{{< border style="dotted thick" >}}
 Dotted Thick
 {{< /border >}}
 
 ## color
 
 ```
-{{</* color "primary" */>}}
+{{</* color type="primary" */>}}
 Text primary
 {{</* /color */>}}
 
-{{</* color "secondary" */>}}
+{{</* color type="secondary" */>}}
 Text secondary
 {{</* /color */>}}
 
-{{</* color "success" */>}}
+{{</* color type="success" */>}}
 Text success
 {{</* /color */>}}
 
-{{</* color "warning" */>}}
+{{</* color type="warning" */>}}
 Text warning
 {{</* /color */>}}
 
-{{</* color "danger" */>}}
+{{</* color type="danger" */>}}
 Text danger
 {{</* /color */>}}
 
-{{</* color "muted" */>}}
+{{</* color type="muted" */>}}
 Text muted
 {{</* /color */>}}
 ```
 
-{{< color "primary" >}}
+{{< color type="primary" >}}
 Text primary
 {{< /color >}}
 
-{{< color "secondary" >}}
+{{< color type="secondary" >}}
 Text secondary
 {{< /color >}}
 
-{{< color "success" >}}
+{{< color type="success" >}}
 Text success
 {{< /color >}}
 
-{{< color "warning" >}}
+{{< color type="warning" >}}
 Text warning
 {{< /color >}}
 
-{{< color "danger" >}}
+{{< color type="danger" >}}
 Text danger
 {{< /color >}}
 
-{{< color "muted" >}}
+{{< color type="muted" >}}
 Text muted
 {{< /color >}}
 
 ## background
 
 ```
-{{</* background "primary" */>}}
+{{</* background type="primary" */>}}
 Background primary
 {{</* /background */>}}
 
-{{</* background "secondary" */>}}
+{{</* background type="secondary" */>}}
 Background secondary
 {{</* /background */>}}
 
-{{</* background "success" */>}}
+{{</* background type="success" */>}}
 Background success
 {{</* /background */>}}
 
-{{</* background "warning" */>}}
+{{</* background type="warning" */>}}
 Background warning
 {{</* /background */>}}
 
-{{</* background "danger" */>}}
+{{</* background type="danger" */>}}
 Background danger
 {{</* /background */>}}
 ```
 
-{{< background "primary" >}}
+{{< background type="primary" >}}
 Background primary
 {{< /background >}}
 
-{{< background "secondary" >}}
+{{< background type="secondary" >}}
 Background secondary
 {{< /background >}}
 
-{{< background "success" >}}
+{{< background type="success" >}}
 Background success
 {{< /background >}}
 
-{{< background "warning" >}}
+{{< background type="warning" >}}
 Background warning
 {{< /background >}}
 
-{{< background "danger" >}}
+{{< background type="danger" >}}
 Background danger
 {{< /background >}}
 
 ## alert
 
 ```
-{{</* alert "primary" */>}}
+{{</* alert type="primary" */>}}
 Alert-primary
 {{</* /alert */>}}
 
-{{</* alert "secondary" */>}}
+{{</* alert type="secondary" */>}}
 Alert-secondary
 {{</* /alert */>}}
 
-{{</* alert "success" */>}}
+{{</* alert type="success" */>}}
 Alert-success
 {{</* /alert */>}}
 
-{{</* alert "warning" */>}}
+{{</* alert type="warning" */>}}
 Alert-warning
 {{</* /alert */>}}
 
-{{</* alert "danger" */>}}
+{{</* alert type="danger" */>}}
 Alert-danger
 {{</* /alert */>}}
 ```
 
-{{< alert "primary" >}}
+{{< alert type="primary" >}}
 Alert-primary
 {{< /alert >}}
 
-{{< alert "secondary" >}}
+{{< alert type="secondary" >}}
 Alert-secondary
 {{< /alert >}}
 
-{{< alert "success" >}}
+{{< alert type="success" >}}
 Alert-success
 {{< /alert >}}
 
-{{< alert "warning" >}}
+{{< alert type="warning" >}}
 Alert-warning
 {{< /alert >}}
 
-{{< alert "danger" >}}
+{{< alert type="danger" >}}
 Alert-danger
 {{< /alert >}}
 
@@ -214,24 +214,24 @@ Alert-danger
 ```
 <h3>Example badge {{</* badge */>}}123{{</* /badge */>}}</h3>
 
-<h3>Example badge {{</* badge "secondary" */>}}123{{</* /badge */>}}</h3>
+<h3>Example badge {{</* badge type="secondary" */>}}123{{</* /badge */>}}</h3>
 
-<h3>Example badge {{</* badge "success" */>}}123{{</* /badge */>}}</h3>
+<h3>Example badge {{</* badge type="success" */>}}123{{</* /badge */>}}</h3>
 
-<h3>Example badge {{</* badge "warning" */>}}123{{</* /badge */>}}</h3>
+<h3>Example badge {{</* badge type="warning" */>}}123{{</* /badge */>}}</h3>
 
-<h3>Example badge {{</* badge "danger" */>}}123{{</* /badge */>}}</h3>
+<h3>Example badge {{</* badge type="danger" */>}}123{{</* /badge */>}}</h3>
 ```
 
 <h3>Example badge {{< badge >}}123{{< /badge >}}</h3>
 
-<h3>Example badge {{< badge "secondary" >}}123{{< /badge >}}</h3>
+<h3>Example badge {{< badge type="secondary" >}}123{{< /badge >}}</h3>
 
-<h3>Example badge {{< badge "success" >}}123{{< /badge >}}</h3>
+<h3>Example badge {{< badge type="success" >}}123{{< /badge >}}</h3>
 
-<h3>Example badge {{< badge "warning" >}}123{{< /badge >}}</h3>
+<h3>Example badge {{< badge type="warning" >}}123{{< /badge >}}</h3>
 
-<h3>Example badge {{< badge "danger" >}}123{{< /badge >}}</h3>
+<h3>Example badge {{< badge type="danger" >}}123{{< /badge >}}</h3>
 
 ## card
 
@@ -272,25 +272,25 @@ text="The Sun is the star at the center of the Solar System. It is a nearly perf
 * _italic_
 {{</* /border */>}}
 
-{{</* color "success" */>}}
+{{</* color type="success" */>}}
 * Testing GitHub issue <https://github.com/zwbetz-gh/papercss-hugo-theme/issues/8>
 * **bold**
 * _italic_
 {{</* /color */>}}
 
-{{</* background "success" */>}}
+{{</* background type="success" */>}}
 * Testing GitHub issue <https://github.com/zwbetz-gh/papercss-hugo-theme/issues/8>
 * **bold**
 * _italic_
 {{</* /background */>}}
 
-{{</* alert "success" */>}}
+{{</* alert type="success" */>}}
 * Testing GitHub issue <https://github.com/zwbetz-gh/papercss-hugo-theme/issues/8>
 * **bold**
 * _italic_
 {{</* /alert */>}}
 
-<h3>Example badge {{</* badge "success" */>}}[link](https://gohugo.io/functions/markdownify/), **bold**, _italic_{{</* /badge */>}}</h3>
+<h3>Example badge {{</* badge type="success" */>}}[link](https://gohugo.io/functions/markdownify/), **bold**, _italic_{{</* /badge */>}}</h3>
 ```
 
 {{< border >}}
@@ -301,7 +301,7 @@ text="The Sun is the star at the center of the Solar System. It is a nearly perf
 
 <br>
 
-{{< color "success" >}}
+{{< color type="success" >}}
 * Testing GitHub issue <https://github.com/zwbetz-gh/papercss-hugo-theme/issues/8>
 * **bold**
 * _italic_
@@ -309,7 +309,7 @@ text="The Sun is the star at the center of the Solar System. It is a nearly perf
 
 <br>
 
-{{< background "success" >}}
+{{< background type="success" >}}
 * Testing GitHub issue <https://github.com/zwbetz-gh/papercss-hugo-theme/issues/8>
 * **bold**
 * _italic_
@@ -317,10 +317,10 @@ text="The Sun is the star at the center of the Solar System. It is a nearly perf
 
 <br>
 
-{{< alert "success" >}}
+{{< alert type="success" >}}
 * Testing GitHub issue <https://github.com/zwbetz-gh/papercss-hugo-theme/issues/8>
 * **bold**
 * _italic_
 {{< /alert >}}
 
-<h3>Example badge {{< badge "success" >}}[link](https://gohugo.io/functions/markdownify/), **bold**, _italic_{{< /badge >}}</h3>
+<h3>Example badge {{< badge type="success" >}}[link](https://gohugo.io/functions/markdownify/), **bold**, _italic_{{< /badge >}}</h3>

@@ -1,0 +1,81 @@
+name: Release
+
+# A release is a tag, created locally and SSH-signed (see RELEASING.md), so the
+# GitHub UI cannot produce it. The tag push runs this workflow, which runs the
+# theme's own gates and, only if they pass, creates the GitHub Release with a
+# source archive. Nothing is published by hand.
+#
+# Dispatch the workflow to build and list the artifact set without publishing.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and list the release artifact set without publishing
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Verify and publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The tag and its history are needed for the release-consistency check.
+          fetch-depth: 0
+
+      # `make check` is the single source of truth for the gate sequence and
+      # includes the release-consistency check, so nothing is published from a
+      # tree that fails its own gates. On a tag push, check-release.mjs reads
+      # the tag ref from the environment.
+      - name: Verify the theme's own gates
+        uses: devcontainers/ci@v0.3
+        with:
+          cacheFrom: ghcr.io/ssmiller25/r15-papercss-hugo-theme
+          push: never
+          runCmd: make check
+
+      - name: Assemble the source archive
+        id: artifacts
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          NAME="r15-papercss-hugo-theme-${VERSION}"
+          git archive --format=tar.gz --prefix="${NAME}/" -o "${NAME}.tar.gz" HEAD
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "files=${NAME}.tar.gz" >> "$GITHUB_OUTPUT"
+
+      - name: Attest build provenance
+        if: github.event_name == 'push'
+        uses: actions/attest@v4
+        with:
+          subject-path: r15-papercss-hugo-theme-*.tar.gz
+
+      - name: List the artifact set (dry run)
+        if: github.event_name != 'push'
+        run: ls -l ${{ steps.artifacts.outputs.files }}
+
+      - name: Publish the GitHub Release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # A prerelease tag (e.g. v1.1.0-rc.1) is published as a prerelease so
+          # it never becomes the release consumers are offered as current.
+          PRERELEASE=""
+          case "${GITHUB_REF_NAME}" in *-*) PRERELEASE="--prerelease" ;; esac
+          gh release create "${GITHUB_REF_NAME}" ${{ steps.artifacts.outputs.files }} \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes \
+            $PRERELEASE

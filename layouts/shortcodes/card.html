@@ -1,35 +1,46 @@
-{{ $img := .Get "img" }}
-{{ $command := .Get "command" }}
-{{ $options := .Get "options" }}
-
-{{ $original := .Page.Resources.GetMatch (printf "*%s*" $img) }}
-{{ $new := "" }}
-
-{{ if eq $command "Fit" }}
-  {{ $new = $original.Fit $options }}
-{{ else if eq $command "Fill" }}
-  {{ $new = $original.Fill $options }}
-{{ else if eq $command "Resize" }}
-  {{ $new = $original.Resize $options }}
-{{ else if eq $command "Original" }}
-  {{ $new = $original }}
-{{ else }}
-  {{ errorf "Invalid image processing command: Must be one of Fit, Fill, Resize, Original." }}
-{{ end }}
-
-<div class="card row flex-center" style="">
-  <a href="{{ $original.RelPermalink }}" class="img-link">
-    <img src="{{ $new.RelPermalink }}">
+{{- $img := .Get "img" -}}
+{{- $command := .Get "command" -}}
+{{- $options := .Get "options" -}}
+{{- $alt := .Get "alt" | default "" -}}
+{{- $commands := slice "Fit" "Fill" "Resize" "Original" -}}
+{{- if not $command -}}
+  {{- errorf "shortcode %q: missing required parameter 'command' at %s; accepted values: %s" .Name .Position (delimit $commands ", ") -}}
+{{- else if not (in $commands $command) -}}
+  {{- errorf "shortcode %q: invalid 'command' %q at %s; accepted values: %s" .Name $command .Position (delimit $commands ", ") -}}
+{{- end -}}
+{{- if not $img -}}
+  {{- errorf "shortcode %q: missing required parameter 'img' at %s" .Name .Position -}}
+{{- end -}}
+{{- $original := "" -}}
+{{- with $img -}}
+  {{- $original = $.Page.Resources.GetMatch (printf "*%s*" .) -}}
+{{- end -}}
+{{- if and $img (not $original) -}}
+  {{- errorf "shortcode %q: could not resolve image resource %q in %q at %s" .Name $img .Page.File.Path .Position -}}
+{{- end -}}
+{{- if $original -}}
+{{- $new := $original -}}
+{{- if eq $command "Fit" -}}
+  {{- $new = $original.Fit $options -}}
+{{- else if eq $command "Fill" -}}
+  {{- $new = $original.Fill $options -}}
+{{- else if eq $command "Resize" -}}
+  {{- $new = $original.Resize $options -}}
+{{- end -}}
+<div class="card row flex-center">
+  <a href="{{ $original.RelPermalink }}" class="img-link" aria-label="{{ .Get "title" | default (printf "View image %s" $img) }}">
+    <img src="{{ $new.RelPermalink }}" alt="{{ $alt }}" width="{{ $new.Width }}" height="{{ $new.Height }}">
   </a>
   <div class="card-body">
-  {{ with (.Get "title" )}}
+{{ with (.Get "title" )}}
     <h4 class="card-title">{{ . | markdownify }}</h4>
-  {{ end }}
-  {{ with (.Get "subtitle" )}}
+{{ end }}
+{{ with (.Get "subtitle" )}}
     <h5 class="card-subtitle">{{ . | markdownify }}</h5>
-  {{ end }}
-  {{ with (.Get "text") }}
+{{ end }}
+{{ with (.Get "text") }}
     <p class="card-text">{{ . | markdownify }}</p>
-  {{ end }}
+{{ end }}
   </div>
 </div>
+{{- end -}}

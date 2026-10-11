@@ -5,16 +5,19 @@
 
   {{ hugo.Generator }}
   <link rel="canonical" href="{{ .Permalink }}">
+{{ with .OutputFormats.Get "RSS" }}
+  <link rel="alternate" type="{{ .MediaType.Type }}" href="{{ .Permalink }}" title="{{ $.Site.Title }}">
+{{ end }}
 
-  {{ if .IsHome }}
-    {{ with .Site.Params.homeMetaContent }}
+{{ if .IsHome }}
+{{ with .Site.Params.homeMetaContent }}
       <meta name="description" content="{{ . | plainify }}">
-    {{ end }}
-  {{ else }}
-    {{ $summary := trim (.Summary | plainify | htmlUnescape) "\n\r"
-      | default .Title }}
+{{ end }}
+{{ else }}
+{{ $summary := trim (.Summary | plainify | htmlUnescape) "\n\r"
+| default .Title }}
     <meta name="description" content="{{ $summary }}">
-  {{ end }}
+{{ end }}
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -24,19 +27,19 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="theme-color" content="#ffffff">
 
-  <link rel="stylesheet" type="text/css" href="{{ "css/paper.css" | relURL }}">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/ssmiller25/papercss@v2.0.1/dist/paper.min.css" integrity="sha384-X6OIslUE2lkIrtz1qoMMAFZrjXkE+wjL6x+tSbtQa31zv1YQ2CBp4gSSTJ/dd6LS" crossorigin="anonymous">
 
-  {{ $customCssPath := "css/custom.css" }}
-  {{ $customCss:= resources.Get $customCssPath | resources.ExecuteAsTemplate $customCssPath . }}
-  <link rel="stylesheet" type="text/css" href="{{ $customCss.RelPermalink }}">
-  
-  {{ if hugo.IsProduction }}
+{{ $customCssPath := "css/custom.css" }}
+{{ $customCss := resources.Get $customCssPath | resources.ExecuteAsTemplate $customCssPath . | minify | fingerprint }}
+  <link rel="stylesheet" type="text/css" href="{{ $customCss.RelPermalink }}" integrity="{{ $customCss.Data.Integrity }}">
+
+{{ if hugo.IsProduction }}
     {{ template "_internal/google_analytics.html" . }}
-  {{ end }}
+{{ end }}
 
-  {{ $title := print .Title " | " .Site.Title }}
-  {{ if .IsHome }}
-    {{ $title = .Site.Title }}
-  {{ end }}
+{{ $title := print .Title " | " .Site.Title }}
+{{ if .IsHome }}
+{{ $title = .Site.Title }}
+{{ end }}
   <title>{{ $title }}</title>
 </head>

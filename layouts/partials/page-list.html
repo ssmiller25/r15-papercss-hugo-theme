@@ -1,0 +1,21 @@
+{{- $pages := .pages -}}
+{{- $sort := .sort | default "date-desc" -}}
+{{- $showSummary := .showSummary | default true -}}
+{{- $ordered := $pages -}}
+{{- if eq $sort "date-desc" -}}
+  {{- $ordered = $pages.ByPublishDate.Reverse -}}
+{{- else if eq $sort "title" -}}
+  {{- $ordered = $pages.ByTitle -}}
+{{- end -}}
+<ul class="post-list-items">
+{{- range $ordered }}
+  <li>
+    <h2 class="post-list{{ if and $showSummary (ne .Params.show_summary false) }} summary{{ end }}">
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    </h2>
+{{- if and $showSummary (ne .Params.show_summary false) }}
+    {{ .Summary }}
+{{- end }}
+  </li>
+{{- end }}
+</ul>

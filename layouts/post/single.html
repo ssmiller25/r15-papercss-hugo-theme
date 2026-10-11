@@ -7,16 +7,16 @@
 <br>
 {{ with .Params.tags }}
   <strong>Tags: </strong>
-  {{ range . }}
+{{ range . }}
     <a href="{{ "tags/" | relURL }}{{ . | urlize }}">{{ . }}</a>
-  {{ end }}
+{{ end }}
 {{ end }}
 
 {{ if ne .Params.toc false }}
   {{ partial "toc.html" . }}
 {{ end }}
 
-{{ .Content }}
+{{ partial "content.html" . }}
 {{ template "_internal/disqus.html" . }}
 
 {{ end }}

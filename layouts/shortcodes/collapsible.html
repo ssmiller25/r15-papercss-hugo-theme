@@ -1,16 +1,14 @@
-{{ $summary := .Get 0 | markdownify }}
-{{ $body := .Inner | markdownify }}
-
-{{ $seed := "yolo" }}
-{{ $random := delimit (shuffle (split (md5 $seed) "" )) "" }}
-{{ $id := printf "collapsible_%s" $random }}
-
+{{- $summary := .Get "summary" -}}
+{{- if not $summary -}}
+  {{- errorf "shortcode %q: missing required parameter 'summary' at %s" .Name .Position -}}
+{{- end -}}
+{{- $id := printf "collapsible_%d" .Ordinal -}}
 <div class="collapsible">
-  <input id="{{ $id }}" type="checkbox" name="collapsible">
+  <input id="{{ $id }}" type="checkbox" name="{{ $id }}">
   <label for="{{ $id }}">
-    {{ $summary }}
+    {{ $summary | markdownify }}
   </label>
   <div class="collapsible-body">
-    {{ $body }}
+    {{ .Inner | markdownify }}
   </div>
 </div>

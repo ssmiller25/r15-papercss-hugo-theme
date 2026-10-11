@@ -1,3 +1,8 @@
-<span class="badge {{ .Get 0 }}">
+{{- $type := .Get "type" -}}
+{{- $allowed := slice "primary" "secondary" "success" "warning" "danger" "muted" -}}
+{{- if and $type (not (in $allowed $type)) -}}
+  {{- errorf "shortcode %q: invalid 'type' %q at %s; accepted values: %s" .Name $type .Position (delimit $allowed ", ") -}}
+{{- end -}}
+<span class="badge{{ with $type }} {{ . }}{{ end }}">
   {{ .Inner | markdownify }}
 </span>

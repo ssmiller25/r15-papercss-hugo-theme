@@ -14,11 +14,11 @@
 })();
 
 function initSearch() {
-  var searchInput = document.getElementById('searchBox');
-  var resultsDiv = document.getElementById('searchResults');
+  var searchInput = document.getElementById('search-box');
+  var resultsDiv = document.getElementById('search-results');
   if (!searchInput || !resultsDiv) return;
   // Hide results box initially
-  resultsDiv.style.display = 'none';
+  resultsDiv.classList.add('is-hidden');
 
   fetch('/search.json')
     .then(response => response.json())
@@ -34,11 +34,11 @@ function initSearch() {
         var query = searchInput.value.trim();
         if (!query) {
           resultsDiv.innerHTML = '';
-          resultsDiv.style.display = 'none';
+          resultsDiv.classList.add('is-hidden');
           return;
         }
         var results = fuse.search(query);
-        resultsDiv.style.display = 'block';
+        resultsDiv.classList.remove('is-hidden');
         resultsDiv.innerHTML = '';
         if (results.length === 0) {
           var empty = document.createElement('p');
@@ -68,7 +68,10 @@ function initSearch() {
       });
     })
     .catch(function(err) {
-      resultsDiv.style.display = 'block';
-      resultsDiv.innerHTML = '<p>Error loading search index.</p>';
+      resultsDiv.classList.remove('is-hidden');
+      resultsDiv.innerHTML = '';
+      var error = document.createElement('p');
+      error.textContent = 'Error loading search index.';
+      resultsDiv.appendChild(error);
     });
 }

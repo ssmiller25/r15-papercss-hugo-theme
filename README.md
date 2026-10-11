@@ -3,6 +3,7 @@
 A Hugo theme made with PaperCSS, the less formal CSS framework.
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ssmiller25/r15-papercss-hugo-theme)
+[![Release](https://img.shields.io/github/v/release/ssmiller25/r15-papercss-hugo-theme)](https://github.com/ssmiller25/r15-papercss-hugo-theme/releases/latest)
 
 Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://github.com/zwbetz-gh/papercss-hugo-theme).  Mostly for persoanl use with my blog and other sub-sites, but completely usable to anyone else you might find it useful.
 
@@ -16,6 +17,8 @@ Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://gi
   - [Updating](#updating)
   - [Run example site](#run-example-site)
   - [Configuration](#configuration)
+  - [PaperCSS](#papercss)
+  - [Development and verification](#development-and-verification)
   - [Git commits homepage](#git-commits-homepage)
     - [Correcting a commit's displayed text](#correcting-a-commits-displayed-text)
   - [Favicons](#favicons)
@@ -31,23 +34,65 @@ https://r15-papercss-hugo.r15cookie.com
 
 ## Minimum Hugo version
 
-Hugo version `0.81.0` or higher is required. View the [Hugo releases](https://github.com/gohugoio/hugo/releases) and download the binary for your OS.
+Hugo version `0.131.0` or higher is required. View the [Hugo releases](https://github.com/gohugoio/hugo/releases) and download the binary for your OS. This floor is the version the theme is built and verified against; `theme.toml` declares it and `make check` fails if the two drift apart.
 
 ## Installation
 
+There are two ways to use the theme. Both pin an exact version — do not track a
+branch, because the theme's markup changes between releases and
+[`UPGRADE.md`](UPGRADE.md) records what a consumer must adjust.
+
+### As a Hugo Module (requires Go)
+
 From the root of your site:
 
 ```
-git submodule add https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
+hugo mod init github.com/you/your-site
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.0.0
 ```
+
+Then import it from your site configuration:
+
+```toml
+[module]
+  [[module.imports]]
+    path = 'github.com/ssmiller25/r15-papercss-hugo-theme'
+```
+
+The resolved version is recorded in your `go.mod` and `go.sum`, so a build is
+reproducible; commit both.
+
+### As a git submodule (no Go toolchain required)
+
+From the root of your site:
+
+```
+git submodule add -b v1.0.0 https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
+```
+
+The `-b v1.0.0` pins the submodule to the release tag rather than the default
+branch.
 
 ## Updating
 
-From the root of your site:
+Move the pin to the release you want — read `CHANGELOG.md` and `UPGRADE.md`
+first.
+
+Hugo Module:
 
 ```
-git submodule update --remote --merge
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.0.0
 ```
+
+git submodule:
+
+```
+git -C themes/r15-papercss-hugo-theme fetch --tags
+git -C themes/r15-papercss-hugo-theme checkout v1.0.0
+git add themes/r15-papercss-hugo-theme
+```
+
+Replace `v1.0.0` with the target release.
 
 ## Run example site
 
@@ -60,6 +105,56 @@ hugo server --themesDir ../..
 ## Configuration
 
 Copy `config.yaml` from the [`exampleSite`](https://github.com/ssmiller25/r15-papercss-hugo-theme/blob/main/exampleSite/config.yaml), then edit as desired. 
+
+## PaperCSS
+
+This theme references PaperCSS from the maintained copy at
+[`ssmiller25/papercss`](https://github.com/ssmiller25/papercss), pinned to the
+immutable release **`v2.0.1`** and loaded from jsDelivr:
+
+```
+https://cdn.jsdelivr.net/gh/ssmiller25/papercss@v2.0.1/dist/paper.min.css
+```
+
+The pin is recorded in `papercss.lock.json` together with a subresource-integrity
+(SRI) digest, and `head.html` carries both. A browser refuses to apply the
+stylesheet if the served bytes do not match the digest, and `make check` verifies
+that `head.html` still references exactly the pinned URL and digest — and, when
+online, that the URL still serves those bytes and that the stylesheet's fonts
+resolve. Because the tag is immutable and the bytes are integrity-checked, the
+stylesheet is referenced rather than vendored.
+
+The framework is not forked or patched. Every theme-side style lives in
+`assets/css/custom.css`, which loads after the framework stylesheet, is minified
+and fingerprinted, and is served with a subresource-integrity digest. The
+framework's own fonts (Neucha and Patrick Hand SC) are self-hosted by the
+referenced stylesheet, so the page makes no separate font request.
+
+One defect in the referenced release is known to remain, and is not triggered by
+the theme today: in dark mode `--primary-text` equals `--main-background`, so
+text resolved from it is invisible on a dark ground. The `add-dark-mode-toggle`
+change carries the local correction and an upstream report; dark mode is not yet
+part of this theme.
+
+## Development and verification
+
+Run the full verification gate from the repository root:
+
+```
+make check
+```
+
+It runs the same sequence continuous integration runs:
+
+1. builds `exampleSite` into `exampleSite/public`, cleaning stale output first;
+2. validates the generated HTML against the committed error budget in
+   `.htmlvalidate-baseline.json`;
+3. confirms two consecutive builds are byte-identical;
+4. verifies the pinned PaperCSS reference (tag, integrity digest, and resolved assets); and
+5. checks that `theme.toml`'s declared Hugo floor matches the version in use.
+
+Lower the recorded HTML error budget deliberately, after a real improvement, with
+`make check-update-baseline`; a passing run never changes it on its own.
 
 ## Git commits homepage
 
