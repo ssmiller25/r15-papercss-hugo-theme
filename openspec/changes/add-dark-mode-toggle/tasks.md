@@ -56,7 +56,7 @@ The framework is consumed by reference, not vendored: `papercss.lock.json` pins 
 - [x] 7.3 Verify `scripts/check-papercss.mjs` passes and `head.html` references exactly the `v2.0.2` URL and digest recorded in `papercss.lock.json`, confirming the framework reference did not drift during this change.
 - [x] 7.4 Walk each scenario in `specs/theme-mode-switching/spec.md` against a running build. Verified in a real browser: unstated follows system dark/light, no system preference falls back to light, a stored choice overrides the system both ways, the choice survives navigation, the control reports the active mode via `aria-pressed`, the control is keyboard operable, and theme-owned and runtime-rendered colors both follow the mode.
 - [x] 7.5 **Manual review (owner).** Run the example site locally (`make run-example`), open it in a browser, and review both modes by hand: the mode control and its focus state, the nav at narrow widths, the commit feed, the alert/background/badge/text shortcodes, and the footer. Verify `enableDarkMode: false` renders no control and no dark styling. Signed off by the owner.
-- [ ] 7.6 Push the branch to the remote only after 7.5 is signed off, and only when explicitly asked to push.
+- [x] 7.6 Push the branch to the remote only after 7.5 is signed off, and only when explicitly asked to push. Pushed to `origin/main` (commit 528a248) on the owner's instruction.
 
 ## 8. Documentation
 
