@@ -49,7 +49,7 @@ From the root of your site:
 
 ```
 hugo mod init github.com/you/your-site
-hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.1.0
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.1.1
 ```
 
 Then import it from your site configuration:
@@ -68,10 +68,10 @@ reproducible; commit both.
 From the root of your site:
 
 ```
-git submodule add -b v1.1.0 https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
+git submodule add -b v1.1.1 https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
 ```
 
-The `-b v1.1.0` pins the submodule to the release tag rather than the default
+The `-b v1.1.1` pins the submodule to the release tag rather than the default
 branch.
 
 ## Updating
@@ -82,18 +82,18 @@ first.
 Hugo Module:
 
 ```
-hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.1.0
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.1.1
 ```
 
 git submodule:
 
 ```
 git -C themes/r15-papercss-hugo-theme fetch --tags
-git -C themes/r15-papercss-hugo-theme checkout v1.1.0
+git -C themes/r15-papercss-hugo-theme checkout v1.1.1
 git add themes/r15-papercss-hugo-theme
 ```
 
-Replace `v1.1.0` with the target release.
+Replace `v1.1.1` with the target release.
 
 ## Run example site
 
@@ -178,6 +178,19 @@ Values that stay low-contrast but legible — the non-primary `.alert-*` and
 `.background-*` variants, `.text-secondary`, `.text-danger`, `.text-muted`, and
 `.badge` — are left as PaperCSS publishes them rather than restyled. The result
 is "PaperCSS's dark mode, corrected", not a purpose-designed dark theme.
+
+### Table-of-contents correction
+
+PaperCSS styles the `nav` element as a navigation menu control by element type,
+so its `nav a` / `nav ul` rules also reach Hugo's `<nav id="TableOfContents">`
+landmark — a document landmark, not a menu. `assets/css/custom.css` opts the
+table of contents out of that presentation: it clears the menu's underline on
+table-of-contents links, which otherwise sits below each entry and overlaps the
+one beneath it, and restores default alignment so the table of contents stays
+left-aligned below the framework's 992px breakpoint. The main navigation menu
+keeps its underline and centered small-screen layout. The over-broad selector is
+reported upstream as
+[`ssmiller25/papercss#18`](https://github.com/ssmiller25/papercss/issues/18).
 
 ## Development and verification
 

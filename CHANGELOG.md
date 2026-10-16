@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.1
+
+### Fixed
+
+- **The navigation menu underline no longer bleeds onto the table of
+  contents.** The referenced PaperCSS release styles `nav`, `nav a`,
+  `nav a:hover`, and `nav ul` as a navigation menu control by element type, so
+  those rules also matched Hugo's `<nav id="TableOfContents">` landmark. The
+  5px menu underline sat below each table-of-contents entry and overlapped the
+  text beneath it, and below the framework's 992px breakpoint the table of
+  contents was centered while the document body stayed left-aligned. The
+  theme's override layer now clears the menu-control underline and restores
+  default alignment for the table of contents only, leaving the main
+  navigation menu's underline and centered small-screen layout unchanged. The
+  over-broad framework selectors are reported upstream as
+  [ssmiller25/papercss#18](https://github.com/ssmiller25/papercss/issues/18).
+
 ## 1.1.0
 
 ### Added

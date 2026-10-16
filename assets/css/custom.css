@@ -135,6 +135,43 @@ blockquote {
   font-size: 1.3em;
 }
 
+/*
+ * The framework styles the `nav` element as a menu control by element type, so
+ * its rules reach Hugo's `<nav id="TableOfContents">` landmark even though a
+ * table of contents is a document landmark, not a menu. Two declarations leak
+ * visibly; the corrections below opt the TOC out of both. `.toc` is the wrapper
+ * the theme owns in `toc.html`, so the selector list keeps them scoped to the
+ * table of contents and leaves the main menu's framework presentation — the
+ * hand-drawn underline and the centered small-screen layout — untouched. Each
+ * rule outranks its framework counterpart on class specificity (`.toc a:link`
+ * is (0,1,2) against `nav a` at (0,0,2); `.toc ul` is (0,1,1) against `nav ul`
+ * at (0,0,2), inside that rule's media query too), so neither needs
+ * `!important`. The pinned release (v2.0.2) still carries both framework rules;
+ * an upstream report tracks the over-broad `nav` selectors (ssmiller25/papercss#18).
+ */
+
+/* framework: `nav a, nav a:hover { border-bottom-style: solid;
+   border-bottom-width: 5px }`, recolored by `nav a { border-bottom-color }`;
+   in the TOC's vertical list that underline sits below each link's box and
+   overlaps the entry beneath it. Clear the border only: the framework's
+   `padding-bottom` and radii are invisible once it is gone. Every TOC entry is
+   a link, so `:link`/`:visited` cover the base state; the `:hover` arm beats
+   `nav a:hover`. */
+.toc a:link,
+.toc a:visited,
+.toc a:hover {
+  border-bottom: none;
+}
+
+/* framework: `nav ul { text-align: center }` at `max-width: 992px`, meant for
+   the collapsing menu; a document's table of contents should stay left-aligned
+   like the body it indexes. Applied at all widths — `start` is the initial
+   value, so this is harmless above the breakpoint — which keeps the correction
+   independent of a breakpoint the framework controls. */
+.toc ul {
+  text-align: start;
+}
+
 /* search */
 #search-container {
   margin: 1em 0;
