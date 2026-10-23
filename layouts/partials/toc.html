@@ -1,4 +1,8 @@
-{{- if .TableOfContents -}}
+{{- /* Hugo returns a <nav id="TableOfContents"> element even when the page has
+       no headings for it to list, so testing .TableOfContents for truthiness
+       renders an empty "Table of contents" box on every short page. Test the
+       rendered list instead: no entries, no table of contents. */ -}}
+{{- if findRE `<li>` .TableOfContents -}}
 {{- $toc := replaceRE `<nav id="TableOfContents">` `<nav id="TableOfContents" aria-label="Table of contents">` .TableOfContents -}}
 <div class="child-borders">
   <div class="toc border">

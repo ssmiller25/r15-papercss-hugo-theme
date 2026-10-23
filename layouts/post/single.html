@@ -12,7 +12,19 @@
 {{ end }}
 {{ end }}
 
-{{ if ne .Params.toc false }}
+{{/* A post shows a table of contents when its site enables one
+     (params.enableToc, on by default) or when the post asks for one, and never
+     when it opts out. A page set is the final word in both directions.
+     isset is used rather than default: Hugo's default treats false as empty,
+     which would silently ignore an enableToc: false. */}}
+{{ $showToc := true }}
+{{ if isset site.Params "enabletoc" }}
+  {{ $showToc = site.Params.enableToc }}
+{{ end }}
+{{ if isset .Params "toc" }}
+  {{ $showToc = .Params.toc }}
+{{ end }}
+{{ if $showToc }}
   {{ partial "toc.html" . }}
 {{ end }}
 

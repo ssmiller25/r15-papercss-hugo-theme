@@ -4,6 +4,34 @@ What changed between releases, and what to do about it. The changelog records
 what shipped; this records the before/after and the substitution a consumer
 makes. Each section states what it was, what it is now, and what to do.
 
+## 1.2.0
+
+No breaking changes. Two behavior changes are worth knowing about.
+
+### An empty table of contents is no longer rendered
+
+**What it was.** Every post rendered a "Table of contents" box, even when the
+post had no `<h2>`s. Hugo returns a non-empty `<nav>` element for a page with no
+headings, so the partial's `{{ if .TableOfContents }}` test was always true.
+
+**What it is now.** The partial tests the rendered list, so the box appears only
+when it has entries.
+
+**What to do.** Nothing. A site that wants the box gone from a page that *does*
+have headings should set `toc: false` on that page.
+
+### A site can turn the table of contents off by default
+
+**What it was.** The table of contents was on for every post, and the only
+control was per-page `toc: false`.
+
+**What it is now.** `params.enableToc: false` turns it off for all posts, and a
+page opts back in with `toc: true`. The default is still on, so an existing site
+renders as before.
+
+**What to do.** Add `enableToc: false` to `params` and `toc: true` to the posts
+that should keep one.
+
 ## 1.0.0
 
 This is the first tagged release. Everything below changed on the way to it, so
