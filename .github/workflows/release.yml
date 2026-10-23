@@ -31,7 +31,7 @@ jobs:
     name: Verify and publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # The tag and its history are needed for the release-consistency check.
           fetch-depth: 0
