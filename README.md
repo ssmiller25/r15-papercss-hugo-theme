@@ -24,7 +24,7 @@ Based in the excellent [original papercss-hugo-theme by Zachary Betz](https://gi
     - [Correcting a commit's displayed text](#correcting-a-commits-displayed-text)
   - [Favicons](#favicons)
   - [Shortcodes](#shortcodes)
-  - [Disable toc for a blog post](#disable-toc-for-a-blog-post)
+  - [Table of contents on a blog post](#table-of-contents-on-a-blog-post)
   - [Disable summary for a blog post](#disable-summary-for-a-blog-post)
   - [Getting help](#getting-help)
   - [Credits](#credits)
@@ -49,7 +49,7 @@ From the root of your site:
 
 ```
 hugo mod init github.com/you/your-site
-hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.1.1
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.2.0
 ```
 
 Then import it from your site configuration:
@@ -68,10 +68,10 @@ reproducible; commit both.
 From the root of your site:
 
 ```
-git submodule add -b v1.1.1 https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
+git submodule add -b v1.2.0 https://github.com/ssmiller25/r15-papercss-hugo-theme.git themes/r15-papercss-hugo-theme
 ```
 
-The `-b v1.1.1` pins the submodule to the release tag rather than the default
+The `-b v1.2.0` pins the submodule to the release tag rather than the default
 branch.
 
 ## Updating
@@ -82,18 +82,18 @@ first.
 Hugo Module:
 
 ```
-hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.1.1
+hugo mod get github.com/ssmiller25/r15-papercss-hugo-theme@v1.2.0
 ```
 
 git submodule:
 
 ```
 git -C themes/r15-papercss-hugo-theme fetch --tags
-git -C themes/r15-papercss-hugo-theme checkout v1.1.1
+git -C themes/r15-papercss-hugo-theme checkout v1.2.0
 git add themes/r15-papercss-hugo-theme
 ```
 
-Replace `v1.1.1` with the target release.
+Replace `v1.2.0` with the target release.
 
 ## Run example site
 
@@ -251,16 +251,29 @@ Upload your image to [RealFaviconGenerator](https://realfavicongenerator.net/) t
 
 See the [full list of supported shortcodes](https://papercss-hugo-theme.netlify.com/papercss-shortcodes/).
 
-## Disable toc for a blog post
+## Table of contents on a blog post
 
-Blog posts that have two or more subheadings (`<h2>`s) automatically get a table of contents. To disable this set `toc` to `false`. For example:
+A post gets a table of contents when it has subheadings (`<h2>`s) to list
+**and** the site or the post asks for one. A page with nothing to list never
+renders the box, so short posts stay unadorned.
 
+By default a site enables the table of contents for all of its posts. Turn it
+off site-wide and opt in per post:
+
+```yaml
+params:
+  enableToc: false
 ```
+
+```yaml
 ---
-title: "My page with a few headings"
-toc: false
+title: "A post long enough to need a table of contents"
+toc: true
 ---
 ```
+
+`toc` on a page wins over the site setting in both directions, so `toc: false`
+suppresses the table of contents on a single post in a site that leaves it on.
 
 ## Disable summary for a blog post
 

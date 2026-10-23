@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.2.0
+
+### Added
+
+- **An `enableToc` site parameter**, on by default. A site that wants tables of
+  contents only on its long-form posts sets `params.enableToc: false` and opts
+  individual posts in with `toc: true`. `toc` on a page wins over the site
+  setting in both directions, so `toc: false` still suppresses a single post.
+  Nothing changes for a site that sets neither.
+
+### Fixed
+
+- **Pages with no subheadings no longer render an empty "Table of contents"
+  box.** Hugo returns a `<nav id="TableOfContents">` element for every page,
+  including pages whose content has no headings for it to list, so the partial's
+  truthiness test passed on every page and emitted the box with an empty
+  navigation element inside it. The partial now tests the rendered list itself,
+  which means the box appears only when it has entries — the behavior the README
+  already described. Pages that have real tables of contents are unaffected.
+
 ## 1.1.1
 
 ### Fixed

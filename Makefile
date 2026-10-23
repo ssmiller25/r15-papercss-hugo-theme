@@ -35,7 +35,7 @@ build-example:   ## Build the example site
 	@(cd exampleSite; hugo --cleanDestinationDir --themesDir ../..; cd ..)
 
 .PHONY: check
-check:   ## Run the full verification gate - build the example site, validate the generated HTML against the committed error baseline, confirm the build is deterministic, verify the pinned PaperCSS reference and the declared Hugo floor, then lint the theme's stylesheet (same sequence as CI)
+check:   ## Run the full verification gate - build the example site, validate the generated HTML against the committed error baseline, confirm the build is deterministic, verify the pinned PaperCSS reference and the declared Hugo floor, confirm no empty table of contents renders, then lint the theme's stylesheet (same sequence as CI)
 	@$(MAKE) build-example
 	@node scripts/check-html.mjs
 	@node scripts/check-determinism.mjs
@@ -43,6 +43,7 @@ check:   ## Run the full verification gate - build the example site, validate th
 	@node scripts/check-hugo-version.mjs
 	@node scripts/check-release.mjs
 	@node scripts/check-distribution.mjs
+	@node scripts/check-toc.mjs
 	@# stylelint resolves a shareable `extends` against the config file, the
 	@# working directory, and finally a directory it infers from the node
 	@# binary. The linters are installed globally and that inference does not
